@@ -1,0 +1,51 @@
+<div class="otp-container">
+  <form [formGroup]="otpForm" (ngSubmit)="onSubmit()" class="otp-form">
+    <h2>OTP Verification</h2>
+    <p>Enter the 6-digit code sent to {{ email }}</p>
+    
+    <div class="otp-input-container">
+      <input 
+        type="text" 
+        formControlName="otp"
+        maxlength="6"
+        placeholder="Enter OTP"
+        (input)="formatOTP($event)"
+        [ngClass]="{'input-error': isOTPInvalid()}"
+      >
+      <div *ngIf="isOTPInvalid()" class="error-message">
+        <small>
+          {{ otpForm.get('otp')?.errors?.['required'] 
+             ? 'OTP is required' 
+             : 'Invalid OTP format' 
+          }}
+        </small>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="server-error">
+      {{ errorMessage }}
+    </div>
+
+    <div class="otp-actions">
+      <button 
+        type="submit" 
+        [disabled]="otpForm.invalid || isLoading"
+      >
+        {{ isLoading ? 'Verifying...' : 'Verify OTP' }}
+      </button>
+
+      <button 
+        type="button" 
+        class="resend-btn"
+        (click)="resendOTP()"
+        [disabled]="isResendDisabled"
+      >
+        Resend OTP {{ resendCountdown > 0 ? resendCountdown + 's' : '' }}
+      </button>
+    </div>
+
+    <div class="back-to-login">
+      <a (click)="backToLogin()">Back to Login</a>
+    </div>
+  </form>
+</div>
