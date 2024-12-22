@@ -10,9 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='customuser',
-            name='id',
-            field=models.IntegerField(primary_key=True, serialize=False),
-        ),
+        # migrations.AlterField(
+        #     model_name='customuser',
+        #     name='id',
+        #     field=models.IntegerField(primary_key=True, serialize=False),
+        # ),
     ]
