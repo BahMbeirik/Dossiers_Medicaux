@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 django = "==4.2.7"
 python-dotenv = "*"
+django-cors-headers = "==4.2.0"
+djangorestframework = "==3.14.0"
 
 [dev-packages]
 

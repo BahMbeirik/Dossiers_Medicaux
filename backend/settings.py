@@ -59,6 +59,7 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200', 
+    'http://127.0.0.1:4200'
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,7 @@ DATABASES = {
         'USER': '',
         'PASSWORD': '',
         'AUTH_SOURCE': 'admin',
+        
     }
 }
 

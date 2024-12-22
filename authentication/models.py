@@ -12,7 +12,7 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-
+    
 class CustomUser(AbstractBaseUser):
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
