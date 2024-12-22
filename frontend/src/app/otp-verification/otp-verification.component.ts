@@ -36,6 +36,11 @@ export class OtpVerificationComponent implements OnInit {
   }
 
   ngOnInit() {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      this.router.navigate(['/home']);
+    }
+
     if (!this.email) {
       // Redirect to login if no email
       this.router.navigate(['/login']);
@@ -64,12 +69,12 @@ export class OtpVerificationComponent implements OnInit {
         otp: this.otpForm.value.otp
       }).subscribe({
         next: (response) => {
-          // Store tokens
+          
           this.authService.setTokens({
             access: response.access,
-            refresh: response.refresh
+            refresh: response.refresh,
           });
-          
+        
           // Navigate to dashboard or home
           this.router.navigate(['/home']);
           this.isLoading = false;
@@ -83,7 +88,7 @@ export class OtpVerificationComponent implements OnInit {
   }
 
   startResendCountdown() {
-    this.resendCountdown = 60; // 60 seconds
+    this.resendCountdown = 120; // 60 seconds
     this.isResendDisabled = true;
 
     const timer = setInterval(() => {

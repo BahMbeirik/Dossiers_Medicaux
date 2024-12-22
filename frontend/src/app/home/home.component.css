@@ -1,0 +1,22 @@
+.myContainer{
+  display:flex;
+  flex-wrap: wrap;
+  margin: 20px;
+  padding: 20px;
+}
+.patient-item{
+  background-color: white;
+  border-left: 2px solid blue;
+  border-radius: 0px 7px 7px 0px;
+  width: 20%;
+  padding: 8px;
+  margin-right: 30px;
+  margin-bottom: 15px;
+}
+
+h3{
+  cursor: pointer;
+}
+p{
+  color: lightgray;
+}

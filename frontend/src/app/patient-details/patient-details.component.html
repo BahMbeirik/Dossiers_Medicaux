@@ -1,0 +1,15 @@
+<div class="container mt-5 p-4 border rounded shadow-lg bg-light">
+  <h1 class="text-center text-primary mb-4">Détails du Patient</h1>
+  <div class="mb-3">
+    <p><strong>Nom:</strong> {{ patient.nom }}</p>
+    <p><strong>Prénom:</strong> {{ patient.prenom }}</p>
+    <p><strong>Âge:</strong> {{ patient.age }}</p>
+    <p><strong>Numéro d'identité:</strong> {{ patient.numero_identite }}</p>
+    <p><strong>Numéro de téléphone:</strong> {{ patient.numero_telephone }}</p>
+  </div>
+  <div class="d-flex justify-content-between">
+    <button class="btn btn-info text-white" (click)="editPatient()">Modifier</button>
+    <button class="btn btn-secondary text-white w-50" >Document</button>
+    <button class="btn btn-danger" (click)="deletePatient()">Supprimer</button>
+  </div>
+</div>

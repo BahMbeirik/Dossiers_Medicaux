@@ -7,4 +7,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'frontend';
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('access_token');
+  }
 }

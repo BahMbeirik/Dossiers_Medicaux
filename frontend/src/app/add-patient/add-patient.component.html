@@ -1,0 +1,61 @@
+<div class="container mt-5 p-4 border rounded shadow-lg bg-light">
+  <h1 class="text-center text-primary mb-4">Ajouter un Patient</h1>
+  <form (ngSubmit)="addPatient()">
+    <div class="mb-3">
+      <label for="numero_identite" class="form-label">Numéro d'identité</label>
+      <input
+        id="numero_identite"
+        type="number"
+        class="form-control"
+        name="numero_identite"
+        [(ngModel)]="patient.numero_identite"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="nom" class="form-label">Nom</label>
+      <input
+        id="nom"
+        type="text"
+        class="form-control"
+        name="nom"
+        [(ngModel)]="patient.nom"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="prenom" class="form-label">Prénom</label>
+      <input
+        id="prenom"
+        type="text"
+        class="form-control"
+        name="prenom"
+        [(ngModel)]="patient.prenom"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="age" class="form-label">Âge</label>
+      <input
+        id="age"
+        type="number"
+        class="form-control"
+        name="age"
+        [(ngModel)]="patient.age"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="numero_telephone" class="form-label">Numéro de téléphone</label>
+      <input
+        id="numero_telephone"
+        type="number"
+        class="form-control"
+        name="numero_telephone"
+        [(ngModel)]="patient.numero_telephone"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Ajouter</button>
+  </form>
+</div>
