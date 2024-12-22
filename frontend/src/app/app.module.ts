@@ -10,6 +10,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
 import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
+import { NavbarComponent } from './navbar/navbar.component';
+import { PatientDetailsComponent } from './patient-details/patient-details.component';
+import { AddPatientComponent } from './add-patient/add-patient.component';
+import { EditPatientComponent } from './edit-patient/edit-patient.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +21,11 @@ import { HomeComponent } from './home/home.component';
     RegisterComponent,
     LoginComponent,
     OtpVerificationComponent,
-    HomeComponent
+    HomeComponent,
+    NavbarComponent,
+    PatientDetailsComponent,
+    AddPatientComponent,
+    EditPatientComponent,
   ],
   imports: [
     BrowserModule,
@@ -26,6 +34,7 @@ import { HomeComponent } from './home/home.component';
     ReactiveFormsModule,
     RouterModule,
     HttpClientModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

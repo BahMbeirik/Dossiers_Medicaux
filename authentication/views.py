@@ -5,6 +5,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate
+
+from .models import Patient
+from .serializers import PatientSerializer
+from rest_framework import viewsets, permissions
+
+
 from .serializers import (
     UserRegistrationSerializer, 
     LoginSerializer, 
@@ -92,3 +98,17 @@ class OTPVerificationView(APIView):
                 }, status=status.HTTP_404_NOT_FOUND)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+class PatientViewSet(viewsets.ModelViewSet):
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        logger.info(f"Authorization Header: {request.headers.get('Authorization')}")
+        logger.info(f"Request Data: {request.data}")
+        return super().create(request, *args, **kwargs)

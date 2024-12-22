@@ -1,0 +1,57 @@
+<div class="container mt-5 p-4 border rounded shadow-lg bg-light">
+  <h1 class="text-center text-primary mb-4">Modifier le Patient</h1>
+  <form (ngSubmit)="updatePatient()">
+    <div class="mb-3">
+      <label for="numero_identite" class="form-label">Numéro d'identité</label>
+      <input
+        id="numero_identite"
+        class="form-control"
+        [(ngModel)]="patient.numero_identite"
+        name="numero_identite"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="nom" class="form-label">Nom</label>
+      <input
+        id="nom"
+        class="form-control"
+        [(ngModel)]="patient.nom"
+        name="nom"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="prenom" class="form-label">Prénom</label>
+      <input
+        id="prenom"
+        class="form-control"
+        [(ngModel)]="patient.prenom"
+        name="prenom"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="age" class="form-label">Âge</label>
+      <input
+        id="age"
+        type="number"
+        class="form-control"
+        [(ngModel)]="patient.age"
+        name="age"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="numero_telephone" class="form-label">Numéro de téléphone</label>
+      <input
+        id="numero_telephone"
+        class="form-control"
+        [(ngModel)]="patient.numero_telephone"
+        name="numero_telephone"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Mettre à jour</button>
+  </form>
+</div>

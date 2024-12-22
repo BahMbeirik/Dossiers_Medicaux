@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CustomUser
 from django.core.validators import validate_email
+from .models import Patient
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
@@ -30,3 +31,10 @@ class LoginSerializer(serializers.Serializer):
 class OTPVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.CharField(max_length=6)
+
+
+class PatientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        fields = ['id', 'numero_identite', 'nom', 'prenom', 'age', 'numero_telephone']
+        

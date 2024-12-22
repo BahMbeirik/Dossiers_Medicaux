@@ -39,3 +39,17 @@ class CustomUser(AbstractBaseUser):
             return False
         
         return self.otp_secret == otp
+    
+
+class Patient(models.Model):
+    numero_identite = models.CharField(max_length=10, unique=True)
+    nom = models.CharField(max_length=50)
+    prenom = models.CharField(max_length=50)
+    age = models.PositiveIntegerField()
+    numero_telephone = models.CharField(max_length=8, unique=True)
+
+    def __str__(self):
+        return f"{self.nom} {self.prenom}"
+    
+    class Meta:
+        db_table = 'authentication_patient'

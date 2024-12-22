@@ -31,8 +31,19 @@ export class AuthService {
     localStorage.setItem('refresh_token', tokens.refresh);
   }
 
-  logout() {
+
+  logout(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    
   }
+  
+  refreshToken(): Observable<any> {
+    const refreshToken = localStorage.getItem('refresh_token');
+    return this.http.post(`${this.apiUrl}/auth/token/refresh/`, { refresh: refreshToken });
+  }
+
+
+
+
 }

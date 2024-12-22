@@ -1,1 +1,16 @@
-<p>home works!</p>
+<div class="container">
+  <div class="d-flex justify-content-between p-2">
+    <h3>Patients</h3>
+    <button routerLink="/add" class="btn btn-outline-primary ">Ajouter un Patient</button>
+  </div>
+</div>
+<div class="myContainer">
+  <div *ngFor="let patient of patients" class="patient-item shadow-sm">
+    <h3 (click)="navigateToDetails(patient.id!)">
+      {{ patient.nom }} {{ patient.prenom }}
+    </h3>
+    <p>NNI : {{ patient.numero_identite }}</p>
+  </div>
+  
+  
+</div>

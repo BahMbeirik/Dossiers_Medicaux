@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
@@ -8,10 +8,17 @@ import { Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage: string | null = null;
+
+  ngOnInit(): void {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      this.router.navigate(['/home']); // توجه المستخدم للصفحة الرئيسية إذا كان مسجلاً
+    }
+  }
 
   constructor(
     private fb: FormBuilder, 
@@ -36,6 +43,7 @@ export class LoginComponent {
 
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
+
           // Navigate to OTP verification page
           this.router.navigate(['/verify-otp'], { 
             state: { 
