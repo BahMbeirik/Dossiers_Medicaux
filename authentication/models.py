@@ -51,5 +51,5 @@ class Patient(models.Model):
     def __str__(self):
         return f"{self.nom} {self.prenom}"
     
-    class Meta:
-        db_table = 'authentication_patient'
+    # class Meta:
+    #     db_table = 'authentication_patient'

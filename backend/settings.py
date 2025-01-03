@@ -59,7 +59,7 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
@@ -88,7 +88,8 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4200', 
+    'http://localhost:4200',
+    'http://localhost:5173', 
 ]
 
 ROOT_URLCONF = 'backend.urls'
