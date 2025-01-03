@@ -130,16 +130,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'DBDossiersMedicaux', 
+        'ENFORCE_SCHEMA': False,
         'CLIENT': {
             'host': 'localhost',
             'port': 27017,
         },
-        # 'HOST': 'localhost',
-        # 'PORT': 27017,
         'USER': '',
         'PASSWORD': '',
         'AUTH_SOURCE': 'admin',
-
     }
 }
 

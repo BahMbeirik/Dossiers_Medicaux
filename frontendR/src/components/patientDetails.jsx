@@ -56,11 +56,12 @@ const PatientDetails = () => {
     </div>
   )}
   <div className="mb-4">
-    <p><strong>Name:</strong> {patient.nom}</p>
-    <p><strong>First Name:</strong> {patient.prenom}</p>
-    <p><strong>Age:</strong> {patient.age}</p>
-    <p><strong>ID Number:</strong> {patient.numero_identite}</p>
-    <p><strong>Phone Number:</strong> {patient.numero_telephone}</p>
+    <p><strong>Nom :</strong> {patient.nom}</p>
+    <p><strong>Prénom :</strong> {patient.prenom}</p>
+    <p><strong>Date de Naissance :</strong> {patient.date_naissance}</p>
+    <p><strong>NNI :</strong> {patient.numero_identite}</p>
+    <p><strong>Numéro de téléphone :</strong> {patient.numero_telephone}</p>
+    <p><strong>Sexe :</strong> {patient.sex}</p>
   </div>
   <div className="flex justify-between gap-4">
     <button
