@@ -42,10 +42,12 @@ class CustomUser(AbstractBaseUser):
     
 
 class Patient(models.Model):
+    id = models.BigAutoField(primary_key=True)
     numero_identite = models.CharField(max_length=10, unique=True)
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
-    age = models.PositiveIntegerField()
+    date_naissance = models.DateField()
+    sex = models.CharField(max_length=1)
     numero_telephone = models.CharField(max_length=8, unique=True)
 
     def __str__(self):

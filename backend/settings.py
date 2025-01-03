@@ -37,6 +37,8 @@ load_dotenv(dotenv_path=BASE_DIR / '.env')
 
 INSTALLED_APPS = [
     'authentication',
+    'document',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,9 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'corsheaders', 
-    
+    'corsheaders',   
 ]
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -89,7 +91,7 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200', 
-    'http://127.0.0.1:4200'
+    'http://127.0.0.1:4200',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -137,9 +139,12 @@ DATABASES = {
         'USER': '',
         'PASSWORD': '',
         'AUTH_SOURCE': 'admin',
-        
+
     }
 }
+
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

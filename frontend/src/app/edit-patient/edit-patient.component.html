@@ -32,16 +32,25 @@
       />
     </div>
     <div class="mb-3">
-      <label for="age" class="form-label">Âge</label>
+      <label for="date_naissance" class="form-label">Date de naissance</label>
       <input
-        id="age"
-        type="number"
+        id="date_naissance"
+        type="date"
         class="form-control"
-        [(ngModel)]="patient.age"
-        name="age"
+        [(ngModel)]="patient.date_naissance"
+        name="date_naissance"
         required
       />
     </div>
+
+    <div class="mb-3">
+      <label for="date_naissance" class="form-label">Sex</label>
+      <select id="sex" class="form-select" [(ngModel)]="patient.sex">
+        <option value="m">Homme</option>
+        <option value="f">Femme</option>
+      </select>
+    </div>
+
     <div class="mb-3">
       <label for="numero_telephone" class="form-label">Numéro de téléphone</label>
       <input

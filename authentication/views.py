@@ -99,16 +99,7 @@ class OTPVerificationView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    def create(self, request, *args, **kwargs):
-        logger.info(f"Authorization Header: {request.headers.get('Authorization')}")
-        logger.info(f"Request Data: {request.data}")
-        return super().create(request, *args, **kwargs)

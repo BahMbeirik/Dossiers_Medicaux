@@ -13,7 +13,8 @@ export class EditPatientComponent implements OnInit {
     numero_identite: '',
     nom: '',
     prenom: '',
-    age: 0,
+    date_naissance: new Date(),
+    sex: '',
     numero_telephone: ''
   };
 

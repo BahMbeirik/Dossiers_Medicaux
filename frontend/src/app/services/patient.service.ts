@@ -9,7 +9,8 @@ export interface Patient {
   numero_identite: string;
   nom: string;
   prenom: string;
-  age: number;
+  date_naissance: Date;
+  sex: string;
   numero_telephone: string;
 }
 
@@ -26,7 +27,6 @@ export class PatientService {
    */
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('access_token');
-    console.log('Access Token:', token); 
     if (!token) {
       throw new Error('Access token is missing.');
     }
@@ -61,7 +61,6 @@ export class PatientService {
    * إضافة مريض جديد
    */
   addPatient(patient: Patient): Observable<Patient> {
-    console.log('Access Token:', localStorage.getItem('access_token'));
     return this.http.post<Patient>(this.apiUrl, patient, { headers: this.getHeaders() }).pipe(
         catchError(this.handleError)
     );

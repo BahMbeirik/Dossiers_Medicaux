@@ -36,5 +36,5 @@ class OTPVerificationSerializer(serializers.Serializer):
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
-        fields = ['id', 'numero_identite', 'nom', 'prenom', 'age', 'numero_telephone']
+        fields = '__all__'
         
