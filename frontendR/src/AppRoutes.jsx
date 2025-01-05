@@ -1,48 +1,80 @@
-/* eslint-disable no-unused-vars */
+/* src/AppRoutes.jsx */
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Home from "./components/Home";
-import VerifyOtp from "./components/VerifyOtp";
-import Navbar from "./components/Navbar";
-import PatientDetails from './components/patientDetails';
-import AddPatient from "./components/addPatient";
-import EditPatient from "./components/editPatient";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
+
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import VerifyOtp from "./components/auth/VerifyOtp";
+import Home from "./components/patient/Home";
+import AddPatient from "./components/patient/AddPatient";
+import EditPatient from "./components/patient/EditPatient";
+import PatientDetails from "./components/patient/PatientDetails";
+import CreateDocument from "./components/document/CreateDocument";
+import Navbar from "./components/layout/Navbar";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 const AppRoutes = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    setIsLoggedIn(!!token);
-  }, []);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    setIsLoggedIn(false);
-  };
-
   return (
-    <Router>
-      <div>
-        {isLoggedIn && <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
-        <Routes>
-          <Route path="/" element={<Login onLogin={handleLogin} />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/verify-otp" element={<VerifyOtp onLogin={handleLogin} />} />
-          <Route path="/details/:id" element={<PatientDetails />} />
-          <Route path="/add" element={<AddPatient />} />
-          <Route path="/edit/:id" element={<EditPatient />} />
-        </Routes>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-otp" element={<VerifyOtp />} />
+            
+            {/* Protected Routes */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add"
+              element={
+                <ProtectedRoute>
+                  <AddPatient />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <EditPatient />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/details/:id"
+              element={
+                <ProtectedRoute>
+                  <PatientDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patients/:id/documents/new"
+              element={
+                <ProtectedRoute>
+                  <CreateDocument />
+                </ProtectedRoute>
+              }
+            />
+            {/* Redirect any unknown routes to home */}
+            <Route path="*" element={<Navigate to="/home" />} />
+          </Routes>
+          <Toaster position="top-right" reverseOrder={false} />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 };
 

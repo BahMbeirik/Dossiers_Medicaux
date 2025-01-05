@@ -1,14 +1,23 @@
 from .views import *
 from rest_framework.routers import DefaultRouter
 from django.urls import path
+from rest_framework_nested import routers
 
+# Main router
 router = DefaultRouter()
 
+# Register the main routes
 router.register(r'category', CategoryViewSet, basename='categories')
 router.register(r'hospital', HospitalViewSet, basename='hospitals')
 
-urlpatterns = router.urls
+# Nested router for fields within categories
+categories_router = routers.NestedDefaultRouter(router, r'category', lookup='categories')
+categories_router.register(r'fields', FieldViewSet, basename='category-fields')
 
+# Combine all URLs
+urlpatterns = router.urls + categories_router.urls
+
+# Additional endpoints
 urlpatterns += [
     path('documents/create/', CreateDocumentAPIView.as_view(), name='create_document'),
     path('documents/verify/<int:document_id>/', VerifyDocumentIntegrityAPIView.as_view(), name='verify_document'),

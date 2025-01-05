@@ -12,8 +12,12 @@
   "dependencies": {
     "axios": "^1.7.9",
     "formik": "^2.4.6",
+    "frontendr": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.5.1",
+    "react-icons": "^5.4.0",
+    "react-modal": "^3.16.3",
     "react-router-dom": "^7.1.1",
     "yup": "^1.6.1"
   },

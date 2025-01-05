@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5cdd1ec60134848a77b8dff03aebdcc57aa395fa5f515e964aedd63b0bc4b2ed"
+            "sha256": "46a139924b8d377e6edb9daa836a9a9588cc13dd213cba1fa8d4e6ba58030c77"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -133,30 +133,48 @@
         },
         "django": {
             "hashes": [
-                "sha256:ad33ed68db9398f5dfb33282704925bce044bef4261cd4fb59e4e7f9ae505a78",
-                "sha256:c36e2ab12824e2ac36afa8b2515a70c53c7742f0d6eaefa7311ec379558db997"
-            ],
-            "index": "pypi",
-            "markers": "python_version >= '3.8'",
-            "version": "==4.2"
-        },
-        "django-cors-headers": {
-            "hashes": [
-                "sha256:9ada212b0e2efd4a5e339360ffc869cb21ac5605e810afe69f7308e577ea5bde",
-                "sha256:f9749c6410fe738278bc2b6ef17f05195bc7b251693c035752d8257026af024f"
-            ],
-            "index": "pypi",
-            "markers": "python_version >= '3.8'",
-            "version": "==4.2.0"
-        },
-        "djangorestframework": {
-            "hashes": [
-                "sha256:579a333e6256b09489cbe0a067e66abe55c6595d8926be6b99423786334350c8",
-                "sha256:eb63f58c9f218e1a7d064d17a70751f528ed4e1d35547fdade9aaf4cd103fd08"
+                "sha256:a523d62b7ab2908f551dabc32b99017a86aa7784e32b761708e52be3dce6d35d",
+                "sha256:dc41bf07357f1f4810c1c555b685cb51f780b41e37892d6cc92b89789f2847e1"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.6'",
-            "version": "==3.14.0"
+            "version": "==3.1.12"
+        },
+        "django-cors-headers": {
+            "hashes": [
+                "sha256:9322255c296d5f75089571f29e520c83ff9693df17aa3cf9f6a4bea7c6740169",
+                "sha256:db82b2840f667d47872ae3e4a4e0a0d72fbecb42779b8aa233fa8bb965f7836a"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.5'",
+            "version": "==3.5.0"
+        },
+        "djangorestframework": {
+            "hashes": [
+                "sha256:0c33407ce23acc68eca2a6e46424b008c9c02eceb8cf18581921d0092bc1f2ee",
+                "sha256:24c4bf58ed7e85d1fe4ba250ab2da926d263cd57d64b03e8dcef0ac683f8b1aa"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.6'",
+            "version": "==3.13.1"
+        },
+        "djangorestframework-simplejwt": {
+            "hashes": [
+                "sha256:153c973c5c154baf566be431de8527c2bd62557fde7373ebcb0f02b73b28e07a",
+                "sha256:6f09f97cb015265e85d1d02dc6bfc299c72c231eecbe261c5bee5c6b2867f2b4"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.7'",
+            "version": "==4.8.0"
+        },
+        "drf-nested-routers": {
+            "hashes": [
+                "sha256:01aa556b8c08608bb74fb34f6ca065a5183f2cda4dc0478192cc17a2581d71b0",
+                "sha256:996b77f3f4dfaf64569e7b8f04e3919945f90f95366838ca5b8bed9dd709d6c5"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.5'",
+            "version": "==0.93.4"
         },
         "pycparser": {
             "hashes": [
@@ -165,6 +183,14 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==2.22"
+        },
+        "pyjwt": {
+            "hashes": [
+                "sha256:3cc5772eb20009233caf06e9d8a0577824723b44e6648ee0a2aedb6cf9381953",
+                "sha256:dcdd193e30abefd5debf142f9adfcdd2b58004e644f25406ffaebd50bd98dacb"
+            ],
+            "markers": "python_version >= '3.9'",
+            "version": "==2.10.1"
         },
         "python-dotenv": {
             "hashes": [
@@ -197,14 +223,6 @@
             ],
             "markers": "python_version < '3.11'",
             "version": "==4.12.2"
-        },
-        "tzdata": {
-            "hashes": [
-                "sha256:7d85cc416e9382e69095b7bdf4afd9e3880418a2413feec7069d533d6b4e31cc",
-                "sha256:a48093786cdcde33cad18c2555e8532f34422074448fbc874186f0abd79565cd"
-            ],
-            "markers": "sys_platform == 'win32'",
-            "version": "==2024.2"
         }
     },
     "develop": {}

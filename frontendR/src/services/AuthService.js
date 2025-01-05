@@ -1,29 +1,37 @@
-/* eslint-disable no-undef */
-// services/AuthService.js
+/* src/services/AuthService.js */
 import axios from 'axios';
 
-const apiUrl = "http://localhost:8000/api";
+const API_URL = "http://localhost:8000/api/auth/";
 
 const AuthService = {
   register: (userData) => {
-    return axios.post(`${apiUrl}/auth/register/`, userData, {
+    return axios.post(`${API_URL}register/`, userData, {
       headers: { 'Content-Type': 'application/json' },
     });
   },
 
   login: (loginData) => {
-    return axios.post(`${apiUrl}/auth/login/`, loginData, {
+    return axios.post(`${API_URL}login/`, loginData, {
       headers: { 'Content-Type': 'application/json' },
     });
   },
 
   verifyOTP: (otpData) => {
-    return axios.post(`${apiUrl}/auth/verify-otp/`, otpData);
+    return axios.post(`${API_URL}verify-otp/`, otpData);
   },
 
   setTokens: (tokens) => {
     localStorage.setItem('access_token', tokens.access);
     localStorage.setItem('refresh_token', tokens.refresh);
+    localStorage.setItem('user_id', tokens.user_id);
+  },
+
+  getAccessToken: () => {
+    return localStorage.getItem('access_token');
+  },
+
+  getRefreshToken: () => {
+    return localStorage.getItem('refresh_token');
   },
 
   logout: () => {
@@ -31,9 +39,18 @@ const AuthService = {
     localStorage.removeItem('refresh_token');
   },
 
-  refreshToken: () => {
-    const refreshToken = localStorage.getItem('refresh_token');
-    return axios.post(`${apiUrl}/auth/token/refresh/`, { refresh: refreshToken });
+  refreshToken: async () => {
+    const refreshToken = AuthService.getRefreshToken();
+    if (!refreshToken) return null;
+
+    try {
+      const response = await axios.post(`${API_URL}token/refresh/`, { refresh: refreshToken });
+      AuthService.setTokens(response.data);
+      return response.data.access;
+    } catch (error) {
+      AuthService.logout();
+      return null;
+    }
   },
 };
 

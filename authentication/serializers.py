@@ -34,6 +34,7 @@ class OTPVerificationSerializer(serializers.Serializer):
 
 
 class PatientSerializer(serializers.ModelSerializer):
+    sex = serializers.ChoiceField(choices=Patient.SEX_CHOICES)
     class Meta:
         model = Patient
         fields = '__all__'

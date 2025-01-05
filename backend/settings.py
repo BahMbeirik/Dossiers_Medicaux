@@ -13,6 +13,8 @@ from datetime import timedelta
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from dotenv import dotenv_values
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,6 +36,20 @@ CORS_ALLOW_HEADERS = [
 ]
 load_dotenv(dotenv_path=BASE_DIR / '.env')
 # Application definition
+
+# for AES-KEY
+load_dotenv(BASE_DIR / ".env")
+
+# Get AES_KEY from the .env file
+AES_KEY_HEX = os.getenv("AES_KEY")
+if not AES_KEY_HEX:
+    raise ValueError("Missing AES_KEY in .env file.")
+
+# Convert hex to raw bytes
+RAW_AES_KEY = bytes.fromhex(AES_KEY_HEX)
+if len(RAW_AES_KEY) != 32:
+    raise ValueError("AES_KEY must decode to 32 bytes for AES-256 encryption.")
+# END AES-KEY
 
 INSTALLED_APPS = [
     'authentication',
@@ -134,16 +150,12 @@ DATABASES = {
             'host': 'localhost',
             'port': 27017,
         },
-        # 'HOST': 'localhost',
-        # 'PORT': 27017,
         'USER': '',
         'PASSWORD': '',
         'AUTH_SOURCE': 'admin',
 
     }
 }
-
-
 
 
 # Password validation

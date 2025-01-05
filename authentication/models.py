@@ -42,16 +42,18 @@ class CustomUser(AbstractBaseUser):
     
 
 class Patient(models.Model):
+    SEX_CHOICES = [
+        ('M', 'Masculin'),
+        ('F', 'Féminin'),
+    ]
+    
     id = models.BigAutoField(primary_key=True)
     numero_identite = models.CharField(max_length=10, unique=True)
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
     date_naissance = models.DateField()
-    sex = models.CharField(max_length=1)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES)
     numero_telephone = models.CharField(max_length=8, unique=True)
 
     def __str__(self):
         return f"{self.nom} {self.prenom}"
-    
-    # class Meta:
-    #     db_table = 'authentication_patient'

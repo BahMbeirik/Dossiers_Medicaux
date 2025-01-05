@@ -1,0 +1,80 @@
+/* src/components/auth/VerifyOtp.jsx */
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import AuthService from "../../services/AuthService";
+import { useAuth } from "../../context/AuthContext";
+import { FaCheckCircle } from 'react-icons/fa';
+import { toast } from "react-hot-toast";
+
+const VerifyOtp = () => {
+  const [otp, setOtp] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+  const email = location.state?.email || "";
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await AuthService.verifyOTP({ email, otp });
+      login(response.data); // Store tokens and update context
+      toast.success("Connexion réussie !");
+      navigate("/home");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.error || "OTP invalide. Veuillez réessayer."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center mb-6 flex items-center justify-center">
+          <FaCheckCircle className="mr-2 text-green-500" />
+          Vérification OTP
+        </h2>
+        <p className="text-center mb-4">Un code de vérification a été envoyé à {email}</p>
+
+        <div className="mb-4">
+          <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-2">
+            Entrez l'OTP
+          </label>
+          <input
+            type="text"
+            id="otp"
+            name="otp"
+            placeholder="Entrez OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring border-gray-300"
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading || otp.length === 0}
+          className={`w-full p-3 rounded-lg text-white ${
+            isLoading || otp.length === 0
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+          } flex items-center justify-center`}
+        >
+          {isLoading ? "Vérification en cours..." : (
+            <>
+              <FaCheckCircle className="mr-2" />
+              Vérifier OTP
+            </>
+          )}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default VerifyOtp;
