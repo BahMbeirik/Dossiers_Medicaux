@@ -14,6 +14,7 @@ import CreateDocument from "./components/document/CreateDocument";
 import Navbar from "./components/layout/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import DocumentDetail from "./components/document/DocumentDetails";
 
 const AppRoutes = () => {
   return (
@@ -57,6 +58,14 @@ const AppRoutes = () => {
               element={
                 <ProtectedRoute>
                   <PatientDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/documents/:documentId"
+              element={
+                <ProtectedRoute>
+                  <DocumentDetail />
                 </ProtectedRoute>
               }
             />

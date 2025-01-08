@@ -108,6 +108,7 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200',
     'http://localhost:5173', 
+    'http://localhost:5174', 
 ]
 
 ROOT_URLCONF = 'backend.urls'

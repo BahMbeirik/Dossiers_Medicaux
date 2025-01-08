@@ -24,6 +24,14 @@ class HospitalSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DocumentSerializer(serializers.ModelSerializer):
+    decrypted_result = serializers.SerializerMethodField()
+
     class Meta:
         model = Document
-        fields = '__all__'
+        fields = ['id', 'patient_id', 'category_id', 'doctor_id', 'decrypted_result', 'hash', 'created_at']
+
+    def get_decrypted_result(self, obj):
+        try:
+            return obj.get_plaintext_result()
+        except Exception as e:
+            return f"Error decrypting result: {str(e)}"

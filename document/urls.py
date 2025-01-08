@@ -19,6 +19,10 @@ urlpatterns = router.urls + categories_router.urls
 
 # Additional endpoints
 urlpatterns += [
-    path('documents/create/', CreateDocumentAPIView.as_view(), name='create_document'),
+    path('documents/create/', DocumentAPIView.as_view(), name='create_document'),
+    path('documents/<int:document_id>/', DocumentAPIView.as_view(), name='document-detail'),
+
+    path('documents/last/', DocumentLastAPIView.as_view(), name='document-last'),
+
     path('documents/verify/<int:document_id>/', VerifyDocumentIntegrityAPIView.as_view(), name='verify_document'),
 ]

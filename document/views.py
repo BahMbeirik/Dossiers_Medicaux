@@ -6,7 +6,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from .models import Category, Hospital, Document,Field
-from .serializers import CategorySerializer, HospitalSerializer,FieldSerializer
+from .serializers import CategorySerializer, DocumentSerializer, HospitalSerializer,FieldSerializer
 from authentication.models import Patient, CustomUser
 
 import hashlib
@@ -19,7 +19,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-
 
 
 class FieldViewSet(viewsets.ModelViewSet):
@@ -47,7 +46,9 @@ class HospitalViewSet(viewsets.ModelViewSet):
     queryset = Hospital.objects.all()
     serializer_class = HospitalSerializer
 
-class CreateDocumentAPIView(APIView):
+class DocumentAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     """
     API to create a document with encrypted result.
     POST fields required: patient_id, category_id, doctor_id, result (JSON or string)
@@ -92,6 +93,76 @@ class CreateDocumentAPIView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    # get the decrypted document
+    def get(self, request, document_id):
+        """
+        Retrieve a specific document with decrypted result.
+        """
+        try:
+            document = Document.objects.get(id=document_id)
+
+            # Optional: Add permission checks here
+            # For example, ensure the requesting user is the doctor who created the document
+            if document.doctor != request.user:
+                return Response({"error": "You do not have permission to view this document."}, status=status.HTTP_403_FORBIDDEN)
+
+            # Decrypt the result
+            plaintext_result = document.get_plaintext_result()
+
+            # Prepare the response data
+            response_data = {
+                "id": document.id,
+                "patient_id": document.patient.id,
+                "category_id": document.category.id,
+                "doctor_id": document.doctor.id,
+                "result": plaintext_result,  # Decrypted result
+                "hash": document.hash,
+                "created_at": document.created_at
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except Document.DoesNotExist:
+            return Response({"error": "Document not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class DocumentLastAPIView(APIView):
+    """
+    API to retrieve the last document for a specific patient and category.
+    GET parameters: patient_id, category_id
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        patient_id = request.query_params.get("patient_id")
+        category_id = request.query_params.get("category_id")
+
+        if not (patient_id and category_id):
+            return Response({"error": "Missing required query parameters: patient_id and category_id"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            document = Document.objects.filter(
+                patient_id=patient_id,
+                category_id=category_id
+            ).order_by('-created_at').first()
+
+            if not document:
+                return Response({"error": "No document found for the specified patient and category."}, status=status.HTTP_404_NOT_FOUND)
+
+            # Optional: Ensure the requesting user has permission to view the document
+            if document.doctor != request.user:
+                return Response({"error": "You do not have permission to view this document."}, status=status.HTTP_403_FORBIDDEN)
+
+            serializer = DocumentSerializer(document)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Document.DoesNotExist:
+            return Response({"error": "Document not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyDocumentIntegrityAPIView(APIView):

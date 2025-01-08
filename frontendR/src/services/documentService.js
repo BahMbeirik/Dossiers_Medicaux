@@ -49,6 +49,19 @@ api.interceptors.response.use(
   }
 );
 
+
+
+// Fetch categories
+export const getCategories = async () => {
+  try {
+    const response = await api.get("category/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching categories:", error.response || error.message);
+    throw error;
+  }
+};
+
 // Create a new document
 export const createDocument = async (documentData) => {
   try {
@@ -60,13 +73,29 @@ export const createDocument = async (documentData) => {
   }
 };
 
-// Fetch categories
-export const getCategories = async () => {
+// Fetch a specific document by its ID
+export const getDocument = async (documentId) => {
   try {
-    const response = await api.get("category/");
+    const response = await api.get(`documents/${documentId}/`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching categories:", error.response || error.message);
+    console.error("Error fetching document:", error.response || error.message);
+    throw error;
+  }
+};
+
+// get last document for a specific patient and category
+export const getLastDocument = async (patientId, categoryId) => {
+  try {
+    const response = await api.get('documents/last/', {
+      params: {
+        patient_id: patientId,
+        category_id: categoryId,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching last document:", error.response || error.message);
     throw error;
   }
 };
