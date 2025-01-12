@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from document.models import Hospital
 from .models import CustomUser
 from django.core.validators import validate_email
 from .models import Patient
@@ -9,7 +11,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'password', 'confirm_password')
+        fields = ('email','username', 'password', 'confirm_password')
         extra_kwargs = {
             'email': {'validators': [validate_email]}
         }
@@ -31,6 +33,11 @@ class LoginSerializer(serializers.Serializer):
 class OTPVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.CharField(max_length=6)
+
+class CreateDoctorSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    hospital = serializers.PrimaryKeyRelatedField(queryset=Hospital.objects.all())
+
 
 
 class PatientSerializer(serializers.ModelSerializer):

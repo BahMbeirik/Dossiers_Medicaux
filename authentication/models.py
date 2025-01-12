@@ -12,12 +12,34 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-    
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('role', 'Admin')
+        return self.create_user(email, password, **extra_fields)
+
 class CustomUser(AbstractBaseUser):
+    ROLE_CHOICES = (
+        ('Admin', 'Admin'),
+        ('Doctor', 'Doctor'),
+    )
+    id = models.BigAutoField(primary_key=True)
+    username = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     otp_secret = models.CharField(max_length=6, null=True, blank=True)
     otp_created_at = models.DateTimeField(null=True, blank=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Doctor')
+    hospital = models.ForeignKey(
+        'document.Hospital', 
+        to_field='id',  # تحديد الحقل المرجعي بوضوح
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='doctors',
+        db_column='hospital_id'  # تحديد اسم العمود في قاعدة البيانات
+    )
 
     objects = CustomUserManager()
 

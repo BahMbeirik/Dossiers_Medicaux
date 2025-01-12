@@ -9,8 +9,9 @@ from django.contrib.auth import authenticate
 from .models import Patient
 from .serializers import PatientSerializer
 from rest_framework import viewsets, permissions
-
-
+from .serializers import CreateDoctorSerializer
+from rest_framework.permissions import IsAuthenticated
+import secrets
 from .serializers import (
     UserRegistrationSerializer, 
     LoginSerializer, 
@@ -86,6 +87,7 @@ class OTPVerificationView(APIView):
                         'refresh': str(refresh),
                         'access': str(refresh.access_token),
                         'user_id': user.id,
+                        'role': user.role,
                         'message': 'Login successful'
                     }, status=status.HTTP_200_OK)
                 
@@ -99,6 +101,47 @@ class OTPVerificationView(APIView):
                 }, status=status.HTTP_404_NOT_FOUND)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CreateDoctorView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.user.role != 'Admin':
+            return Response({'error': 'Only Admin can create doctors'}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = CreateDoctorSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            hospital = serializer.validated_data['hospital']
+            
+            # Generate a temporary password
+            temp_password = secrets.token_urlsafe(8)
+            
+            # Create the doctor user
+            doctor = CustomUser.objects.create_user(
+                email=email,
+                password=temp_password,
+                role='Doctor',
+                hospital=hospital
+            )
+            
+            # Generate OTP for registration link
+            otp = doctor.generate_otp()
+            
+            # Send email with registration link
+            registration_link = f"http://localhost:8000/api/auth/register?email={email}&token={otp}"
+            send_mail(
+                'Complete Your Registration',
+                f'Please complete your registration by clicking on the following link: {registration_link}',
+                'bahahembeirik@gmail.com',
+                [email],
+                fail_silently=False,
+            )
+            
+            return Response({'message': 'Doctor created successfully. Registration link sent to email.'}, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()

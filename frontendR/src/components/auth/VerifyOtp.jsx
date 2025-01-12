@@ -1,4 +1,5 @@
-/* src/components/auth/VerifyOtp.jsx */
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AuthService from "../../services/AuthService";
@@ -11,7 +12,7 @@ const VerifyOtp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, userRole } = useAuth();
   const email = location.state?.email || "";
 
   const handleSubmit = async (e) => {
@@ -19,9 +20,18 @@ const VerifyOtp = () => {
     setIsLoading(true);
     try {
       const response = await AuthService.verifyOTP({ email, otp });
-      login(response.data); // Store tokens and update context
+      const role = response.data.role; // Récupérer le rôle depuis la réponse de l'API
+      login(response.data, role); // Passer le rôle à la fonction login
+
+      // Rediriger en fonction du rôle de l'utilisateur
+      if (role === "Admin") {
+        navigate("/dashboard");
+      } else if (role === "Doctor") {
+        navigate("/home");
+      } else {
+        navigate("/");
+      }
       toast.success("Connexion réussie !");
-      navigate("/home");
     } catch (error) {
       toast.error(
         error.response?.data?.error || "OTP invalide. Veuillez réessayer."

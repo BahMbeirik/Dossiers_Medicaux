@@ -4,11 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-
+from rest_framework.decorators import action
 from .models import Category, Hospital, Document,Field
-from .serializers import CategorySerializer, DocumentSerializer, HospitalSerializer,FieldSerializer
+from .serializers import CategorySerializer, DocumentSerializer, HospitalSerializer,FieldSerializer,DoctorSerializer
 from authentication.models import Patient, CustomUser
-
 import hashlib
 import base64
 import json
@@ -45,6 +44,13 @@ class HospitalViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Hospital.objects.all()
     serializer_class = HospitalSerializer
+
+    @action(detail=True, methods=['get'])
+    def doctors(self, request, pk=None):
+        hospital = self.get_object()
+        doctors = CustomUser.objects.filter(hospital=hospital, role='Doctor')
+        serializer = DoctorSerializer(doctors, many=True)
+        return Response(serializer.data)
 
 class DocumentAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]

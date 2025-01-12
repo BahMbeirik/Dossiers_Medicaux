@@ -1,5 +1,6 @@
 from .models import Category, Hospital, Document,Field
 from rest_framework import serializers
+from .models import CustomUser
 
 class FieldSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,6 +23,12 @@ class HospitalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hospital
         fields = '__all__'
+        
+class DoctorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'email','username', 'role', 'hospital']
+
 
 class DocumentSerializer(serializers.ModelSerializer):
     decrypted_result = serializers.SerializerMethodField()
