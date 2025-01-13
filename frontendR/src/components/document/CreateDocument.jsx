@@ -1,4 +1,5 @@
 // src/components/document/CreateDocument.jsx
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCategories, createDocument } from "../../services/documentService";
@@ -8,7 +9,18 @@ import { FaFileMedical } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import CategorySelection from './CategorySelection';
 import DocumentForm from './DocumentForm';
-import LastDocument from './LastDocument'; // Import the new component
+import LastDocument from './LastDocument';
+
+// Helper function to convert a File to Base64
+const fileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    if (!file) resolve(null);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+};
 
 const CreateDocument = () => {
   const { id: patientId } = useParams(); // Patient ID from route
@@ -113,13 +125,26 @@ const CreateDocument = () => {
               })}
               onSubmit={async (values, { setSubmitting, resetForm }) => {
                 try {
+                  const processedResult = { ...values.result };
+                  // Iterate over each field to handle files
+                  for (const key in processedResult) {
+                    if (processedResult.hasOwnProperty(key)) {
+                      const value = processedResult[key];
+                      if (value instanceof File) {
+                        const base64 = await fileToBase64(value);
+                        processedResult[key] = base64; // Replace File with Base64 string
+                      }
+                    }
+                  }
+
                   const documentData = {
                     patient_id: parseInt(patientId),
                     category_id: values.category_id,
                     doctor_id: parseInt(values.doctor_id),
-                    result: values.result,
+                    result: processedResult,
                   };
                   const response = await createDocument(documentData);
+                  
                   toast.success('Document créé avec succès !');
                   resetForm();
                   // Optionally, fetch the last document again

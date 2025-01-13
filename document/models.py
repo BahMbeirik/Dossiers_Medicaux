@@ -7,6 +7,7 @@ import base64
 import os
 from djongo import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 
 class Category(models.Model):
@@ -27,6 +28,9 @@ class Field(models.Model):
         ('number', 'Number'),
         ('date', 'Date'),
         ('textarea', 'Textarea'),
+        ('select', 'Select'), 
+        ('file', 'File'),
+
     ]
 
     category = models.ForeignKey(
@@ -37,12 +41,42 @@ class Field(models.Model):
     name = models.CharField(max_length=100)
     field_type = models.CharField(max_length=20, choices=FIELD_TYPES)
     required = models.BooleanField(default=False)
+    options = models.JSONField(
+        blank=True, 
+        null=True,
+        default=list,
+        help_text="Options for select fields. Format: [{'value': 'option1', 'label': 'Option 1'}, ...]"
+    ) 
+    file_types = models.JSONField(
+        blank=True, 
+        null=True,
+        default=list,
+        help_text="Allowed file types for file fields. Example: ['pdf', 'docx', 'jpg']"
+    )
 
     class Meta:
         db_table = 'field'
 
     def __str__(self):
         return f"{self.name} ({self.field_type})"
+    
+    def clean(self):
+        # Ensure that options are provided if field_type is 'select'
+        if self.field_type == 'select' and not self.options:
+            raise ValidationError("Options must be provided for select fields.")
+        if self.field_type != 'select' and self.options:
+            raise ValidationError("Options should only be set for select fields.")
+        
+        # Ensure that file_types are provided if field_type is 'file'
+        if self.field_type == 'file' and not self.file_types:
+            raise ValidationError("File types must be provided for file fields.")
+        if self.field_type != 'file' and self.file_types:
+            raise ValidationError("File types should only be set for file fields.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Calls the clean method
+        super().save(*args, **kwargs)
+
 
 class Hospital(models.Model):
     id = models.BigAutoField(primary_key=True)

@@ -33,7 +33,41 @@ const DocumentForm = ({ formFields, formik, onBack }) => {
                   rows="4"
                   required={field.required}
                 />
-              ) : (
+              ) : 
+
+              field.field_type === 'select' ? (
+                <Field
+                  as="select"
+                  id={field.name}
+                  name={`result.${field.name}`}
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  required={field.required}
+                >
+                  <option value="">-- Sélectionnez une option --</option>
+                  {Array.isArray(field.options) &&
+                    field.options.map((option, index) => (
+                      <option key={index} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                </Field>
+              ) : field.field_type === 'file' ? (
+                <Field
+                  type="file"
+                  id={field.name}
+                  name={`result.${field.name}`}
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  required={field.required}
+                  accept={
+                    Array.isArray(field.file_types)
+                      ? field.file_types.map((ext) => `.${ext}`).join(',')
+                      : undefined
+                  }
+                />
+              )
+               :
+              
+              (
                 <Field
                   id={field.name}
                   name={`result.${field.name}`}

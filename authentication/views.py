@@ -9,7 +9,8 @@ from django.contrib.auth import authenticate
 from .models import Patient
 from .serializers import PatientSerializer
 from rest_framework import viewsets, permissions
-
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import (
     UserRegistrationSerializer, 
@@ -65,7 +66,14 @@ class LoginView(APIView):
             }, status=status.HTTP_401_UNAUTHORIZED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+class AllPatientsViewSet(viewsets.ViewSet):
+    """
+    Example: returns all patients without pagination
+    """
+    def list(self, request):
+        patients = Patient.objects.all()
+        serializer = PatientSerializer(patients, many=True)
+        return Response(serializer.data)
 class OTPVerificationView(APIView):
     permission_classes = [AllowAny]
 
@@ -100,7 +108,14 @@ class OTPVerificationView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
 class PatientViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['sex'] 
+    search_fields = ['numero_identite','nom', 'prenom'] 
+
+

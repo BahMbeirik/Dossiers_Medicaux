@@ -1,11 +1,12 @@
 from django.urls import path,include
 from .views import   UserRegistrationView, LoginView, OTPVerificationView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import PatientViewSet
+from .views import PatientViewSet,AllPatientsViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'patients', PatientViewSet, basename='patients')
+router.register(r'patients-all', AllPatientsViewSet, basename='all_patients')
 urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),

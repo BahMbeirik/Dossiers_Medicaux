@@ -107,4 +107,14 @@ export const deletePatient = async (id) => {
   }
 };
 
+export const getAllPatients = async () => {
+  try {
+    const response = await api.get("auth/patients-all");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching patients:", error.response || error.message);
+    throw error;
+  }
+};
+
 export default api; // Export the configured Axios instance if needed elsewhere

@@ -10,36 +10,35 @@ const LastDocument = ({ patientId, categoryId }) => {
   const [parsedResult, setParsedResult] = useState(null); // To store parsed JSON
 
   useEffect(() => {
+    if (!patientId || !categoryId) {
+      console.error("Invalid parameters: patientId or categoryId is missing.");
+      return;
+    }
+  
     const fetchLastDocument = async () => {
       try {
+        console.log("Fetching document with:", { patientId, categoryId });
         const data = await getLastDocument(patientId, categoryId);
         setDocument(data);
-
-        // Attempt to parse the decrypted_result if it's a JSON string
+  
         if (data.decrypted_result) {
           try {
-            const parsed = JSON.parse(data.decrypted_result);
-            setParsedResult(parsed);
-          } catch (parseError) {
-            console.error('Error parsing decrypted_result:', parseError);
-            setParsedResult(null); // Not a JSON string, handle as plain text
+            setParsedResult(JSON.parse(data.decrypted_result));
+          } catch (error) {
+            setParsedResult(null);
           }
         }
-
+  
         setLoading(false);
       } catch (error) {
-        // If no document found, inform the user
-        if (error.response && error.response.status === 404) {
-          toast.info("Aucun document précédent trouvé pour cette catégorie.");
-        } else {
-          toast.error("Erreur lors de la récupération du document.");
-        }
+        console.error("Error fetching last document:", error.response || error.message);
         setLoading(false);
       }
     };
-
+  
     fetchLastDocument();
   }, [patientId, categoryId]);
+  
 
   if (loading) {
     return <div className="text-center mt-4">Chargement du dernier resultat...</div>;
@@ -66,7 +65,7 @@ const LastDocument = ({ patientId, categoryId }) => {
               {Object.entries(parsedResult).map(([key, value]) => (
                 <li key={key}>
                   <span className="font-semibold">{key}:</span> {value}
-                </li>
+                </li> 
               ))}
             </ul>
           </div>
