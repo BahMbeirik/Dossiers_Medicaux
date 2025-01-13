@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* src/AppRoutes.jsx */
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
@@ -15,6 +16,12 @@ import Navbar from "./components/layout/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import DocumentDetail from "./components/document/DocumentDetails";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import CreateDoctor from "./components/admin/CreateDoctor";
+import Hospital from "./components/admin/Hospital";
+import Category from "./components/admin/Category";
+import Field from "./components/admin/Field";
+import HospitalDoctors from "./components/admin/HospitalDoctors";
 
 const AppRoutes = () => {
   return (
@@ -77,8 +84,51 @@ const AppRoutes = () => {
                 </ProtectedRoute>
               }
             />
+            {/* Admin-specific routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/hospitals" 
+              element={
+                <ProtectedRoute>
+                  <Hospital />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/categories" element={
+              <ProtectedRoute>
+                <Category />
+              </ProtectedRoute>
+              } 
+            />
+            <Route path="/category/:categories_pk/fields" 
+              element={
+                <ProtectedRoute>
+                  <Field />
+                </ProtectedRoute>
+                } 
+              />
+              <Route path="/hospitals/:hospitalId/doctors" 
+                element={
+                  <ProtectedRoute>
+                    <HospitalDoctors />
+                  </ProtectedRoute>
+                } />
+            <Route
+              path="/add-doctor"
+              element={
+                <ProtectedRoute>
+                  <CreateDoctor />
+                </ProtectedRoute>
+              }
+            />
             {/* Redirect any unknown routes to home */}
-            <Route path="*" element={<Navigate to="/home" />} />
+            {/*<Route path="*" element={<Navigate to="/home" />} />*/}
           </Routes>
           <Toaster position="top-right" reverseOrder={false} />
         </div>

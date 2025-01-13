@@ -90,6 +90,12 @@ class HospitalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hospital
         fields = '__all__'
+        
+class DoctorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'email','username', 'role', 'hospital']
+
 
 class DocumentSerializer(serializers.ModelSerializer):
     decrypted_result = serializers.SerializerMethodField()

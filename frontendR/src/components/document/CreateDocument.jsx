@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
 // src/components/document/CreateDocument.jsx
 
 import React, { useEffect, useState } from 'react';

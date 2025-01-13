@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
 /* src/components/auth/Login.jsx */
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -9,15 +11,21 @@ import { FaSignInAlt } from 'react-icons/fa';
 import { toast } from "react-hot-toast";
 
 const Login = () => {
-  const { isLoggedIn, login } = useAuth();
+  const { isLoggedIn, login, userRole } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("/home");
+      if (userRole === "Admin") {
+        navigate("/dashboard");
+      } else if (userRole === "Doctor") {
+        navigate("/home");
+      } else {
+        navigate("/");
+      }
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, navigate, userRole]);
 
   const formik = useFormik({
     initialValues: {

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* src/components/auth/Register.jsx */
 import React from "react";
 import { useFormik } from "formik";
@@ -13,6 +14,7 @@ const Register = () => {
   const formik = useFormik({
     initialValues: {
       email: "",
+      username: "",
       password: "",
       confirmPassword: "",
     },
@@ -20,6 +22,9 @@ const Register = () => {
       email: Yup.string()
         .email("Format d'email invalide")
         .required("Email est requis"),
+      username: Yup.string()
+      .min(3, "Le nom d'utilisateur doit contenir au moins 3 caractères")
+      .required("Nom d'utilisateur est requis"),
       password: Yup.string()
         .min(6, "Le mot de passe doit contenir au moins 6 caractères")
         .required("Mot de passe est requis"),
@@ -31,6 +36,7 @@ const Register = () => {
       try {
         await AuthService.register({
           email: values.email,
+          username: values.username,
           password: values.password,
           confirm_password: values.confirmPassword,
         });
@@ -55,6 +61,29 @@ const Register = () => {
         </h2>
 
         <div className="mb-4">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            UserName
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Entrez votre username"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.username}
+            className={`w-full p-3 border rounded-lg focus:outline-none focus:ring ${
+              formik.touched.username && formik.errors.username ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {formik.touched.username && formik.errors.username && (
+            <div className="text-red-500 text-xs mt-1">
+              {formik.errors.username}
+            </div>
+          )}
+        </div>
+
+        <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
             Email
           </label>
@@ -76,6 +105,7 @@ const Register = () => {
             </div>
           )}
         </div>
+
 
         <div className="mb-4">
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">

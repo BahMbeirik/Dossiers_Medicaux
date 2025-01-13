@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* src/components/document/DocumentDetails.jsx */
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
