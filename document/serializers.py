@@ -2,7 +2,7 @@ from .models import Category, Hospital, Document,Field
 from rest_framework import serializers
 import json
 from collections import OrderedDict
-
+from authentication.models import CustomUser
 
 # serializers.py
 

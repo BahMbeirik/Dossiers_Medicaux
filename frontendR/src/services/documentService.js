@@ -62,16 +62,28 @@ export const getCategories = async () => {
   }
 };
 
-// Create a new document
 export const createDocument = async (documentData) => {
+  console.log("Sending data:", documentData); // 🔥 Debugging Log
   try {
     const response = await api.post("documents/create/", documentData);
     return response.data;
   } catch (error) {
-    console.error("Error creating document:", error.response || error.message);
+    console.error("Error creating document:", error.response?.data || error.message);
     throw error;
   }
 };
+
+
+// Create a new document
+// export const createDocument = async (documentData) => {
+//   try {
+//     const response = await api.post("documents/create/", documentData);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error creating document:", error.response || error.message);
+//     throw error;
+//   }
+// };
 
 // Fetch a specific document by its ID
 export const getDocument = async (documentId) => {
@@ -99,6 +111,32 @@ export const getLastDocument = async (patientId, categoryId) => {
     throw error;
   }
 };
+
+export const getDocumentHistory = async (patientId, categoryId) => {
+  try {
+    const response = await api.get('documents/history/', {
+      params: { patient_id: patientId, category_id: categoryId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching document history:", error.response || error.message);
+    throw error;
+  }
+};
+
+//  Old version
+// export const getDocumentHistory = async (patientId, categoryId) => {
+//   try {
+//     const response = await api.get('documents/history/', {
+//       params: { patient_id: patientId, category_id: categoryId },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching document history:", error.response || error.message);
+//     throw error;
+//   }
+// };
+
 
 // Verify document integrity
 export const verifyDocumentIntegrity = async (documentId) => {

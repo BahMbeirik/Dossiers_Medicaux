@@ -1,6 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-disable no-unused-vars */
-/* src/components/auth/Login.jsx */
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useFormik } from "formik";
@@ -14,7 +11,9 @@ const Login = () => {
   const { isLoggedIn, login, userRole } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [lockoutTime, setLockoutTime] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+
   useEffect(() => {
     if (isLoggedIn) {
       if (userRole === "Admin") {
@@ -26,6 +25,33 @@ const Login = () => {
       }
     }
   }, [isLoggedIn, navigate, userRole]);
+
+  useEffect(() => {
+    const storedLockoutTime = localStorage.getItem("lockoutTime");
+    if (storedLockoutTime) {
+      const timeDiff = Math.max(0, parseInt(storedLockoutTime) - Date.now());
+      if (timeDiff > 0) {
+        setLockoutTime(parseInt(storedLockoutTime));
+        setTimeLeft(Math.ceil(timeDiff / 1000));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            localStorage.removeItem("lockoutTime");
+            setLockoutTime(null);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft]);
 
   const formik = useFormik({
     initialValues: {
@@ -39,17 +65,25 @@ const Login = () => {
       password: Yup.string().required("Mot de passe est requis"),
     }),
     onSubmit: async (values) => {
+      if (lockoutTime) return;
+
       setIsLoading(true);
       try {
         const response = await AuthService.login(values);
-        console.log("Login Response:", response.data); // Debugging
-        // login(response.data); // Store tokens and update context
-        navigate("/verify-otp", { state: { email: values.email } }); // Navigate to OTP
+        console.log("Login Response:", response.data);
+        navigate("/verify-otp", { state: { email: values.email } });
         toast.success("Connexion réussie ! Veuillez vérifier votre OTP.");
       } catch (error) {
-        toast.error(
-          error.response?.data?.error || "Échec de la connexion. Veuillez réessayer."
-        );
+        if (error.response?.status === 403) {
+          const lockoutDuration = error.response.data.lockout_time || 60; // Fallback to 1 minute
+          const lockoutEndTime = Date.now() + lockoutDuration * 1000;
+          setLockoutTime(lockoutEndTime);
+          setTimeLeft(lockoutDuration);
+          localStorage.setItem("lockoutTime", lockoutEndTime.toString());
+          toast.error(`Trop de tentatives échouées. Réessayez après ${lockoutDuration} secondes.`);
+        } else {
+          toast.error(error.response?.data?.error || "Échec de la connexion. Veuillez réessayer.");
+        }
         console.error("Login Error:", error);
       } finally {
         setIsLoading(false);
@@ -81,7 +115,7 @@ const Login = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.email}
-            disabled={isLoading}
+            disabled={isLoading || timeLeft > 0}
             className={`w-full p-3 border rounded-lg focus:outline-none focus:ring ${
               formik.touched.email && formik.errors.email ? "border-red-500" : "border-gray-300"
             }`}
@@ -106,7 +140,7 @@ const Login = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.password}
-            disabled={isLoading}
+            disabled={isLoading || timeLeft > 0}
             className={`w-full p-3 border rounded-lg focus:outline-none focus:ring ${
               formik.touched.password && formik.errors.password ? "border-red-500" : "border-gray-300"
             }`}
@@ -121,19 +155,23 @@ const Login = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={isLoading || !formik.isValid}
+          disabled={isLoading || timeLeft > 0 || !formik.isValid}
           className={`w-full p-3 rounded-lg text-white ${
-            isLoading || !formik.isValid
+            isLoading || timeLeft > 0 || !formik.isValid
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-blue-500 hover:bg-blue-600"
           } flex items-center justify-center`}
         >
-          {isLoading ? "Connexion en cours..." : (
-            <>
-              <FaSignInAlt className="mr-2" />
-              Connexion
-            </>
-          )}
+          {timeLeft > 0
+            ? `Réessayer dans ${timeLeft} sec`
+            : isLoading
+            ? "Connexion en cours..."
+            : (
+              <>
+                <FaSignInAlt className="mr-2" />
+                Connexion
+              </>
+            )}
         </button>
 
         {/* Register Link */}

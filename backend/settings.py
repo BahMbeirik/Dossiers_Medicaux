@@ -13,7 +13,6 @@ from datetime import timedelta
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from dotenv import dotenv_values
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,7 +36,7 @@ CORS_ALLOW_HEADERS = [
 load_dotenv(dotenv_path=BASE_DIR / '.env')
 # Application definition
 
-# for AES-KEY
+####### for AES-KEY #######
 load_dotenv(BASE_DIR / ".env")
 
 # Get AES_KEY from the .env file
@@ -50,6 +49,25 @@ RAW_AES_KEY = bytes.fromhex(AES_KEY_HEX)
 if len(RAW_AES_KEY) != 32:
     raise ValueError("AES_KEY must decode to 32 bytes for AES-256 encryption.")
 # END AES-KEY
+
+######## Load Blockchain Configurations #######
+CONTRACT_ADDRESS = os.getenv("CONTRACT_ADDRESS")
+PRIVATE_KEY = os.getenv("PRIVATE_KEY")
+RPC_URL = os.getenv("RPC_URL", "http://127.0.0.1:7545")  # Default to Ganache if missing
+
+
+# Validate variables
+if not CONTRACT_ADDRESS:
+    raise ValueError("Missing CONTRACT_ADDRESS in .env file.")
+
+if not PRIVATE_KEY:
+    raise ValueError("Missing PRIVATE_KEY in .env file.")
+
+print(f"🔵 Loaded CONTRACT_ADDRESS: {CONTRACT_ADDRESS}")
+print(f"🔵 Loaded PRIVATE_KEY: {PRIVATE_KEY}")
+print(f"🔵 Loaded RPC_URL: {RPC_URL}")
+######## End Loading Blockchain Configurations #######
+
 
 INSTALLED_APPS = [
     'authentication',
@@ -64,7 +82,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',   
-    'django_filters',   
+    'django_filters',  
 
 ]
 
@@ -75,9 +93,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 1, 
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', 'rest_framework.filters.SearchFilter'],
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 1, 
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', 'rest_framework.filters.SearchFilter'],
 }
 
 
@@ -96,7 +114,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
 ]
+
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -111,7 +131,6 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4200',
     'http://localhost:5173', 
     'http://localhost:5174', 
 ]
@@ -204,4 +223,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
 

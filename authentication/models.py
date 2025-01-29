@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models
 from django.utils import timezone
 import secrets
+import hashlib
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -46,21 +47,26 @@ class CustomUser(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+
     def generate_otp(self):
-        self.otp_secret = str(secrets.randbelow(999999)).zfill(6)
+        otp = str(secrets.randbelow(999999)).zfill(6)
+        hashed_otp = hashlib.sha256(otp.encode()).hexdigest()  # Hashing OTP
+        self.otp_secret = hashed_otp
         self.otp_created_at = timezone.now()
         self.save()
-        return self.otp_secret
+        return otp
 
     def verify_otp(self, otp):
         if not self.otp_secret:
             return False
-        
+
         time_diff = timezone.now() - self.otp_created_at
         if time_diff.total_seconds() > 300:  # 5 minutes expiration
             return False
-        
-        return self.otp_secret == otp
+
+        hashed_otp = hashlib.sha256(otp.encode()).hexdigest()
+        return self.otp_secret == hashed_otp
+
     
 
 class Patient(models.Model):

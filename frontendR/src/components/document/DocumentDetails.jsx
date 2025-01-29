@@ -32,7 +32,7 @@ const DocumentDetails = () => {
   }
 
   return (
-    <div className="container mx-auto m-5 p-6 rounded-lg shadow-lg bg-white dark:bg-gray-800 max-w-3xl">
+    <div className="container mx-auto m-5 p-6 rounded-lg shadow-lg bg-white  max-w-3xl">
       <h1 className="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Détails du Document</h1>
       <div className="mb-4">
         <strong>ID:</strong> {document.id}

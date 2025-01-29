@@ -16,6 +16,7 @@ from rest_framework.exceptions import NotFound
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
+from .services.eth_service import BlockchainService
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
@@ -62,20 +63,106 @@ logger = logging.getLogger(__name__)
 
 class DocumentAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    blockchain_service = BlockchainService()  # Initialize blockchain connection
 
+    # def post(self, request):
+    #     print("🔵 Incoming request data:", request.data)  # 🔥 Debugging step
+        
+    #     patient_id = request.data.get("patient_id")
+    #     category_id = request.data.get("category_id")
+    #     doctor_id = request.data.get("doctor_id")
+    #     result_data = request.data.get("result")
+
+    #     if not (patient_id and category_id and doctor_id and result_data):
+    #         logger.warning("⚠️ Missing required fields")
+    #         return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+    #     try:
+    #         # 🔵 Debugging: Print individual values
+    #         print(f"✅ Patient ID: {patient_id}")
+    #         print(f"✅ Category ID: {category_id}")
+    #         print(f"✅ Doctor ID: {doctor_id}")
+    #         print(f"✅ Result Data: {result_data}")
+
+    #         # Ensure result_data is a valid JSON string
+    #         if isinstance(result_data, dict):
+    #             result_data = json.dumps(result_data)
+
+    #         # Fetch related models
+    #         patient = Patient.objects.get(id=patient_id)
+    #         category = Category.objects.get(id=category_id)
+    #         doctor = CustomUser.objects.get(id=doctor_id)
+
+    #         # Create and save the document
+    #         document = Document(
+    #             patient=patient,
+    #             category=category,
+    #             doctor=doctor,
+    #             result=result_data
+    #         )
+    #         document.save()
+
+    #         print(f"✅ Document saved successfully: {document.id}")
+
+    #         # Hash encrypted result
+    #         encrypted_bytes = base64.b64decode(document.result)
+    #         document_hash = hashlib.sha256(encrypted_bytes).hexdigest()
+    #         print(f"🔹 Computed Document Hash: {document_hash}")
+
+    #         try:
+    #             tx_hash = self.blockchain_service.store_document(document.id, document_hash)
+    #             logger.info(f"✅ Document hash stored on blockchain. Tx Hash: {tx_hash}")
+
+    #             return Response(
+    #                 {
+    #                     "message": "Document created successfully and hash stored on blockchain",
+    #                     "document_id": document.id,
+    #                     "hash": document_hash,
+    #                     "tx_hash": tx_hash
+    #                 },
+    #                 status=status.HTTP_201_CREATED
+    #             )
+
+    #         except Exception as e:
+    #             logger.error(f"❌ Blockchain Error: {str(e)}")
+    #             return Response(
+    #                 {"error": f"Document saved locally but failed to store on blockchain: {str(e)}"},
+    #                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    #             )
+
+    #     except (Patient.DoesNotExist, Category.DoesNotExist, CustomUser.DoesNotExist) as e:
+    #         logger.error(f"❌ Related object does not exist: {str(e)}")
+    #         return Response({"error": f"Related object does not exist: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
+    #     except json.JSONDecodeError as e:
+    #         logger.error(f"❌ Invalid JSON format in result data: {str(e)}")
+    #         return Response({"error": "Invalid JSON format in result data."}, status=status.HTTP_400_BAD_REQUEST)
+    #     except Exception as e:
+    #         logger.exception("❌ Unexpected error while creating the document")
+    #         return Response(
+    #             {"error": f"An unexpected error occurred: {str(e)}", "type": type(e).__name__},
+    #             status=status.HTTP_400_BAD_REQUEST
+    #         )
 
     def post(self, request):
+        logger.debug(f"🔵 Incoming request data: {request.data}")  # Debugging step
+
         patient_id = request.data.get("patient_id")
         category_id = request.data.get("category_id")
         doctor_id = request.data.get("doctor_id")
-        result_data = request.data.get("result")  # Could be a dict if coming in as JSON
+        result_data = request.data.get("result")
 
         if not (patient_id and category_id and doctor_id and result_data):
-            logger.warning("Missing required fields")
+            logger.warning("⚠️ Missing required fields")
             return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Convert JSON result to a string if it's a dict
+            # Debugging: Log individual values
+            logger.debug(f"✅ Patient ID: {patient_id}")
+            logger.debug(f"✅ Category ID: {category_id}")
+            logger.debug(f"✅ Doctor ID: {doctor_id}")
+            logger.debug(f"✅ Result Data: {result_data}")
+
+            # Ensure result_data is a valid JSON string
             if isinstance(result_data, dict):
                 result_data = json.dumps(result_data)
 
@@ -84,35 +171,65 @@ class DocumentAPIView(APIView):
             category = Category.objects.get(id=category_id)
             doctor = CustomUser.objects.get(id=doctor_id)
 
-            # Create and save the document (the save() method will do encryption)
+            # Create and save the document
             document = Document(
                 patient=patient,
                 category=category,
                 doctor=doctor,
-                result=result_data  # a plain string now (JSON-serialized if needed)
+                result=result_data
             )
             document.save()
 
-            return Response(
-                {
-                    "message": "Document created successfully",
-                    "document_id": document.id,
-                    "hash": document.hash
-                },
-                status=status.HTTP_201_CREATED
-            )
+            logger.info(f"✅ Document saved successfully: {document.id}")
+
+            # Hash encrypted result
+            encrypted_bytes = base64.b64decode(document.result)
+            document_hash = hashlib.sha256(encrypted_bytes).hexdigest()
+            logger.debug(f"🔹 Computed Document Hash: {document_hash}")
+
+            try:
+                tx_hash = self.blockchain_service.store_document(document.id, document_hash)
+                logger.info(f"✅ Document hash stored on blockchain. Tx Hash: {tx_hash}")
+
+                return Response(
+                    {
+                        "message": "Document created successfully and hash stored on blockchain",
+                        "document_id": document.id,
+                        "hash": document_hash,
+                        "tx_hash": tx_hash
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+
+            except ValueError as ve:
+                # Handle specific blockchain errors like insufficient funds
+                logger.error(f"❌ Blockchain Error: {str(ve)}")
+                return Response(
+                    {"error": f"Document saved locally but failed to store on blockchain: {str(ve)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            except Exception as e:
+                # Handle other blockchain-related errors
+                logger.error(f"❌ Blockchain Error: {str(e)}")
+                return Response(
+                    {"error": f"Document saved locally but failed to store on blockchain: {str(e)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
         except (Patient.DoesNotExist, Category.DoesNotExist, CustomUser.DoesNotExist) as e:
-            logger.error(f"Related object does not exist: {str(e)}")
+            logger.error(f"❌ Related object does not exist: {str(e)}")
             return Response({"error": f"Related object does not exist: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
         except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON format in result data: {str(e)}")
+            logger.error(f"❌ Invalid JSON format in result data: {str(e)}")
             return Response({"error": "Invalid JSON format in result data."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            logger.exception("An error occurred while creating the document")
+            logger.exception("❌ Unexpected error while creating the document")
             return Response(
-                {"error": f"An error occurred: {str(e)}", "type": type(e).__name__},
+                {"error": f"An unexpected error occurred: {str(e)}", "type": type(e).__name__},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        
         
     # get the decrypted document
     def get(self, request, document_id):
@@ -124,11 +241,19 @@ class DocumentAPIView(APIView):
 
             # Optional: Add permission checks here
             # For example, ensure the requesting user is the doctor who created the document
-            if document.doctor != request.user:
-                return Response({"error": "You do not have permission to view this document."}, status=status.HTTP_403_FORBIDDEN)
+            # if document.doctor != request.user:
+            #     return Response({"error": "You do not have permission to view this document."}, status=status.HTTP_403_FORBIDDEN)
 
             # Decrypt the result
             plaintext_result = document.get_plaintext_result()
+
+            # Verify integrity against blockchain
+            try:
+                is_valid = self.blockchain_service.verify_document(document.id, document.hash)
+            except Exception as e:
+                logger.error(f"Blockchain verification failed: {str(e)}")
+                is_valid = False
+
 
             # Prepare the response data
             response_data = {
@@ -138,6 +263,7 @@ class DocumentAPIView(APIView):
                 "doctor_id": document.doctor.id,
                 "result": plaintext_result,  # Decrypted result
                 "hash": document.hash,
+                "is_valid": is_valid,  # Blockchain verification result
                 "created_at": document.created_at
             }
 
@@ -151,7 +277,173 @@ class DocumentAPIView(APIView):
 
 
 logger = logging.getLogger(__name__)
+import traceback
 
+class DocumentHistoryAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        patient_id = request.query_params.get("patient_id")
+        category_id = request.query_params.get("category_id")
+
+        if not patient_id or not category_id:
+            return Response(
+                {"error": "Both 'patient_id' and 'category_id' are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            patient_id = int(patient_id)
+            category_id = int(category_id)
+        except ValueError:
+            return Response(
+                {"error": "'patient_id' and 'category_id' must be integers."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Fetch all documents for the patient and category
+            documents = Document.objects.filter(
+                patient=patient_id,
+                category=category_id
+            ).order_by('-created_at')
+
+            if not documents.exists():
+                return Response(
+                    {"error": "No document found for the given patient and category."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Remove doctor restriction: Allow all doctors to see the data
+            if request.user.role != "Doctor" and request.user.role != "Admin":
+                return Response(
+                    {"error": "Only doctors and admins can access patient documents."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            # Initialize Blockchain Service
+            blockchain_service = BlockchainService()
+
+            # Decrypt and verify all documents
+            document_list = []
+            for doc in documents:
+                try:
+                    decrypted_result = doc.get_plaintext_result()
+                except Exception as decrypt_error:
+                    decrypted_result = f"Failed to decrypt: {str(decrypt_error)}"
+
+                # Verify document hash on blockchain
+                is_valid = False
+                try:
+                    is_valid = blockchain_service.verify_document(doc.id, doc.hash)
+
+                except Exception as e:
+                    is_valid = False  # Assume invalid if verification fails
+
+                document_list.append({
+                    "id": doc.id,
+                    "patient_id": doc.patient.id,
+                    "category_id": doc.category.id,
+                    "doctor_id": doc.doctor.id if doc.doctor else None,
+                    "decrypted_result": decrypted_result,
+                    "hash": doc.hash,
+                    "is_valid": is_valid,  # Add verification result
+                    "created_at": doc.created_at
+                })
+
+            return Response(document_list, status=status.HTTP_200_OK)
+
+        # except Exception as e:
+        #     return Response(
+        #         {"error": f"An unexpected error occurred: {str(e)}"},
+        #         status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        #     )
+        except Exception as e:
+            error_details = traceback.format_exc()
+
+            print("❌ ERROR IN DOCUMENT HISTORY VIEW ❌")
+            print(error_details)  # Print full error traceback in Django logs
+
+            return Response(
+                {
+                    "error": "An unexpected error occurred",
+                    "details": str(e),
+                    "traceback": error_details.split("\n")[-3:]  # Show last 3 lines of error for debugging
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+# OLD VERSION
+# class DocumentHistoryAPIView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get(self, request):
+#         patient_id = request.query_params.get("patient_id")
+#         category_id = request.query_params.get("category_id")
+
+#         if not patient_id or not category_id:
+#             return Response(
+#                 {"error": "Both 'patient_id' and 'category_id' are required."},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+
+#         try:
+#             patient_id = int(patient_id)
+#             category_id = int(category_id)
+#         except ValueError:
+#             return Response(
+#                 {"error": "'patient_id' and 'category_id' must be integers."},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+
+#         try:
+#             # Fetch all documents for the patient and category
+#             documents = Document.objects.filter(
+#                 patient=patient_id,
+#                 category=category_id
+#             ).order_by('-created_at')
+
+#             if not documents.exists():
+#                 return Response(
+#                     {"error": "No document found for the given patient and category."},
+#                     status=status.HTTP_404_NOT_FOUND
+#                 )
+
+#             # Remove doctor restriction: Allow all doctors to see the data
+#             if request.user.role != "Doctor" and request.user.role != "Admin":
+#                 return Response(
+#                     {"error": "Only doctors and admins can access patient documents."},
+#                     status=status.HTTP_403_FORBIDDEN
+#                 )
+
+#             # Decrypt all documents
+#             document_list = []
+#             for doc in documents:
+#                 try:
+#                     decrypted_result = doc.get_plaintext_result()
+#                 except Exception as decrypt_error:
+#                     decrypted_result = f"Failed to decrypt: {str(decrypt_error)}"
+
+#                 document_list.append({
+#                     "id": doc.id,
+#                     "patient_id": doc.patient.id,
+#                     "category_id": doc.category.id,
+#                     "doctor_id": doc.doctor.id if doc.doctor else None,
+#                     "decrypted_result": decrypted_result,
+#                     "hash": doc.hash,
+#                     "created_at": doc.created_at
+#                 })
+
+#             return Response(document_list, status=status.HTTP_200_OK)
+
+#         except Exception as e:
+#             return Response(
+#                 {"error": f"An unexpected error occurred: {str(e)}"},
+#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+#             )
+
+
+# WE DON'T USE THIS RIGHT NOW
 class DocumentLastAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
