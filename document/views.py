@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
+
+from api_limiter import CustomUserRateThrottle
 from .models import Category, Hospital, Document,Field
 from .serializers import CategorySerializer, DocumentSerializer, HospitalSerializer,FieldSerializer,DoctorSerializer
 from authentication.models import Patient, CustomUser
@@ -19,12 +21,16 @@ from django.contrib.auth.decorators import login_required
 from .services.eth_service import BlockchainService
 
 class CategoryViewSet(viewsets.ModelViewSet):
+    throttle_classes = [CustomUserRateThrottle]
+    throttle_scope = 'custom_user'
     permission_classes = [permissions.IsAuthenticated]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
 class FieldViewSet(viewsets.ModelViewSet):
+    throttle_classes = [CustomUserRateThrottle]
+    throttle_scope = 'custom_user'
     serializer_class = FieldSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -48,6 +54,8 @@ class FieldViewSet(viewsets.ModelViewSet):
             raise NotFound(detail="Cannot add field: The specified category does not exist.")
 
 class HospitalViewSet(viewsets.ModelViewSet):
+    throttle_classes = [CustomUserRateThrottle]
+    throttle_scope = 'custom_user'
     permission_classes = [permissions.IsAuthenticated]
     queryset = Hospital.objects.all()
     serializer_class = HospitalSerializer
@@ -62,6 +70,8 @@ class HospitalViewSet(viewsets.ModelViewSet):
 logger = logging.getLogger(__name__)
 
 class DocumentAPIView(APIView):
+    throttle_classes = [CustomUserRateThrottle]
+    throttle_scope = 'custom_user'
     permission_classes = [permissions.IsAuthenticated]
     blockchain_service = BlockchainService()  # Initialize blockchain connection
 
@@ -229,7 +239,6 @@ class DocumentAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        
         
     # get the decrypted document
     def get(self, request, document_id):
@@ -445,6 +454,8 @@ class DocumentHistoryAPIView(APIView):
 
 # WE DON'T USE THIS RIGHT NOW
 class DocumentLastAPIView(APIView):
+    throttle_classes = [CustomUserRateThrottle]
+    throttle_scope = 'custom_user'
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):

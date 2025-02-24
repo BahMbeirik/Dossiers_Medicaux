@@ -6,7 +6,7 @@ import { getAllPatients } from "../../services/patientService";
 import { toast } from "react-hot-toast";
 import { FaUserPlus, FaUserCircle } from "react-icons/fa";
 
-const PAGE_SIZE = 2; // Show 10 patients per page
+const PAGE_SIZE = 10; // Show 10 patients per page
 
 const Home = () => {
   const [allPatients, setAllPatients] = useState([]);      // Full dataset from backend
