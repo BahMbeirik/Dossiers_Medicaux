@@ -61,13 +61,13 @@ const Register = () => {
         </h2>
 
         <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
             UserName
           </label>
           <input
             type="text"
-            id="name"
-            name="name"
+            id="username"
+            name="username"
             placeholder="Entrez votre username"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
