@@ -134,6 +134,7 @@ class Document(models.Model):
         self.result = base64.b64encode(encrypted_bytes).decode('utf-8')
         # Compute SHA-256 of the raw encrypted bytes
         self.hash = hashlib.sha256(encrypted_bytes).hexdigest()
+        print(f"🔵 Computed Hash (Before Storing): {self.hash}")
 
         super().save(*args, **kwargs)
 

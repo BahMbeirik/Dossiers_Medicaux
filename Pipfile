@@ -12,6 +12,7 @@ django-cors-headers = "==3.5.0"
 djangorestframework-simplejwt = "==4.8.0"
 drf-nested-routers = "==0.93.4"
 django-filter = "==21.1"
+web3 = "7.7.0"
 
 [dev-packages]
 

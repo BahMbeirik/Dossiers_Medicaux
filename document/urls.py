@@ -1,4 +1,4 @@
-from .views import CategoryStatsView, CategoryViewSet, HospitalStatsView,HospitalViewSet,FieldViewSet,DocumentAPIView,VerifyDocumentIntegrityAPIView,DocumentLastAPIView
+from .views import CategoryStatsView, CategoryViewSet, DocumentHistoryAPIView, HospitalStatsView,HospitalViewSet,FieldViewSet,DocumentAPIView,VerifyDocumentIntegrityAPIView,DocumentLastAPIView
 from rest_framework.routers import DefaultRouter
 from django.urls import path
 from rest_framework_nested import routers
@@ -22,8 +22,10 @@ urlpatterns += [
     path('documents/create/', DocumentAPIView.as_view(), name='create_document'),
     path('documents/<int:document_id>/', DocumentAPIView.as_view(), name='document-detail'),
 
-    path('documents/last/', DocumentLastAPIView.as_view(), name='document-last'),
+    # path('documents/last/', DocumentLastAPIView.as_view(), name='document-last'),
     # path('documents/last/', get_last_document, name='get_last_document'),
+    path('documents/history/', DocumentHistoryAPIView.as_view(), name='document-history'),
+
 
     path('documents/verify/<int:document_id>/', VerifyDocumentIntegrityAPIView.as_view(), name='verify_document'),
 

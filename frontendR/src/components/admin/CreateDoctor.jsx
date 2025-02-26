@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { getHospitals, createDoctor } from '../../services/AdminService';
 import { toast } from 'react-hot-toast';
 import {FaUserPlus,FaUsers} from "react-icons/fa";
+
 const AddDoctor = () => {
   const [hospitals, setHospitals] = useState([]);
   const [newDoctor, setNewDoctor] = useState({
@@ -28,15 +29,20 @@ const AddDoctor = () => {
       toast.error('Veuillez remplir tous les champs.');
       return;
     }
-
+  
     try {
       await createDoctor(newDoctor);
       toast.success('Docteur ajouté avec succès.');
       setNewDoctor({ email: '', hospital: '' });
     } catch (error) {
-      toast.error('Erreur lors de l\'ajout du docteur.');
+      if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Une erreur s'est produite. Veuillez réessayer.");
+      }
     }
   };
+  
 
   return (
     <div className="container mx-auto m-5 p-6 rounded-lg shadow-lg bg-white dark:bg-gray-800 max-w-4xl">

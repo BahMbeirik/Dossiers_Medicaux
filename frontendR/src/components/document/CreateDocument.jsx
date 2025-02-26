@@ -99,7 +99,7 @@ const CreateDocument = () => {
               }`}
               onClick={() => setActiveTab('last')}
             >
-              Dernier Résultat
+              Derniers Résultats
             </button>
           </div>
 

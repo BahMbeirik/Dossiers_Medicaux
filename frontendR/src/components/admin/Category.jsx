@@ -40,7 +40,7 @@ const Category = () => {
   };
 
   return (
-    <div className="container mx-auto m-5 p-6 rounded-lg shadow-lg bg-white dark:bg-gray-800 max-w-4xl">
+    <div className="container mx-auto m-5 p-6 rounded-lg shadow-lg bg-white max-w-4xl">
           <div className="flex items-center mb-6">
             <BiSolidCategoryAlt className="text-blue-900 mr-2 size-10" />
             <h1 className="text-center text-blue-900 dark:text-blue-300 text-3xl">Gestion des Catégories</h1>
