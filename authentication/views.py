@@ -26,10 +26,8 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 # api limiter
-from api_limiter import CustomUserRateThrottle
 
 class UserRegistrationView(APIView):
-    throttle_classes = [CustomUserRateThrottle]
     throttle_scope = 'custom_user'
     permission_classes = [AllowAny]
 
@@ -56,7 +54,6 @@ class UserRegistrationView(APIView):
 FAILED_LOGIN_ATTEMPTS = {}
 LOGIN_LOCKOUT_TIMES = [60, 180, 300]  # 1 min, 3 min, 5 min
 class LoginView(APIView):
-    throttle_classes = [CustomUserRateThrottle]
     throttle_scope = 'custom_user'
     permission_classes = [AllowAny]
 
@@ -104,7 +101,6 @@ class AllPatientsViewSet(viewsets.ViewSet):
         serializer = PatientSerializer(patients, many=True)
         return Response(serializer.data)
 class OTPVerificationView(APIView):
-    throttle_classes = [CustomUserRateThrottle]
     throttle_scope = 'custom_user'
     permission_classes = [AllowAny]
 
@@ -141,7 +137,6 @@ class OTPVerificationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CreateDoctorView(APIView):
-    throttle_classes = [CustomUserRateThrottle]
     throttle_scope = 'custom_user'
     permission_classes = [IsAuthenticated]
 

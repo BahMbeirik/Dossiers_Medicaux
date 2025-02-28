@@ -49,7 +49,7 @@ const Navbar = () => {
             {userRole === "Doctor" && (
               <Link to="/home" className="flex items-center text-lg font-bold text-gray-800 dark:text-white">
                 <FaHome className="mr-2" />
-                Dossiers Patients
+                Tableau de Bord des Docteurs
               </Link>
             )}
           </div>

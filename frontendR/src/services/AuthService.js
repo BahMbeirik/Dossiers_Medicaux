@@ -2,7 +2,7 @@
 /* src/services/AuthService.js */
 import axios from 'axios';
 
-const API_URL = "http://localhost:8000/api/auth/";
+const API_URL = "http://localhost:5000/api/auth/";
 
 const AuthService = {
 

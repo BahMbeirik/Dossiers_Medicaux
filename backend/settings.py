@@ -97,13 +97,6 @@ REST_FRAMEWORK = {
     # 'PAGE_SIZE': 1, 
     # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', 'rest_framework.filters.SearchFilter'],
 
-    # 'DEFAULT_THROTTLE_CLASSES': [
-    #     'api_limiter.CustomUserRateThrottle',
-    # ],
-    'DEFAULT_THROTTLE_RATES': {
-        # The scope name in your class
-        'custom_user': '10/min',  # 10 requests per minute
-    },
 }
 
 CACHES = {
