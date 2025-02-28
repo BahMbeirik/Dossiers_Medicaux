@@ -7,6 +7,8 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 
+from document.services.eth_service import BlockchainService
+
 from .models import Category, Hospital, Document,Field
 from .serializers import CategorySerializer, DocumentSerializer, HospitalSerializer,FieldSerializer,DoctorSerializer
 from authentication.models import Patient, CustomUser
