@@ -10,7 +10,8 @@ from .models import Patient
 from .serializers import PatientSerializer
 from rest_framework import viewsets, permissions
 from rest_framework import filters
-from django_filters.rest_framework import DjangoFilterBackend
+from .serializers import CreateDoctorSerializer
+from django_filters.rest_framework import DjangoFilterBackend 
 from rest_framework.permissions import IsAuthenticated
 import secrets
 from .serializers import (

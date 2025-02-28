@@ -112,6 +112,7 @@ const Field = () => {
           <option value="number">Number</option>
           <option value="date">Date</option>
           <option value="textarea">Textarea</option>
+          <option value="select">Select</option>
         </select>
         <label className="ml-20 mt-2">
           <input

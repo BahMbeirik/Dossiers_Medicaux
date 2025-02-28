@@ -169,7 +169,32 @@ const Register = () => {
 
         {/* Email Field (Auto-Filled & Disabled) */}
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+            UserName
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Entrez votre username"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.username}
+            className={`w-full p-3 border rounded-lg focus:outline-none focus:ring ${
+              formik.touched.username && formik.errors.username ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {formik.touched.username && formik.errors.username && (
+            <div className="text-red-500 text-xs mt-1">
+              {formik.errors.username}
+            </div>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            Email
+          </label>
           <input
             type="email"
             id="email"

@@ -30,7 +30,6 @@ class Field(models.Model):
         ('textarea', 'Textarea'),
         ('select', 'Select'), 
         ('file', 'File'),
-
     ]
 
     category = models.ForeignKey(

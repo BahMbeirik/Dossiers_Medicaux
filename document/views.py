@@ -17,7 +17,9 @@ from rest_framework.exceptions import NotFound
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from .services.eth_service import BlockchainService
+from django.db.models import Count
+from rest_framework.permissions import AllowAny
+from collections import Counter
 
 class CategoryViewSet(viewsets.ModelViewSet):
     throttle_scope = 'custom_user'
@@ -546,3 +548,38 @@ class VerifyDocumentIntegrityAPIView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+        
+class HospitalStatsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        hospitals = Hospital.objects.all()
+        data = []
+
+        for hospital in hospitals:
+            num_doctors = CustomUser.objects.filter(hospital=hospital, role="Doctor").count()
+            data.append({
+                "id": hospital.id,
+                "name": hospital.name,
+                "num_doctors": num_doctors
+            })
+
+        return Response(data)
+
+
+class CategoryStatsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        categories = Category.objects.all()
+        documents = Document.objects.values_list("category_id", flat=True)
+        
+        # حساب عدد المستندات لكل فئة
+        document_count = Counter(documents)
+
+        data = [
+            {"id": c.id, "name": c.name, "num_documents": document_count.get(c.id, 0)}
+            for c in categories
+        ]
+
+        return Response(data)
