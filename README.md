@@ -1,4 +1,4 @@
-# Dossiers medicaux
+# Dossiers Medicaux
 
 ## Run Guide
 
@@ -6,7 +6,7 @@ This guide provides instructions on how to set up and run the web application us
 
 - **Pipenv** for backend dependency management
 - **Django REST API** as the backend
-- **FLASK** as microservice
+- **Flask** as a microservice
 - **ReactJS** as the frontend
 - **MongoDB** as the database
 
@@ -38,16 +38,17 @@ Ensure you have the following installed:
    ```bash
    python manage.py createsuperuser
    ```
-6. Start the backend server:
+5. Start the backend server:
    ```bash
    python manage.py runserver
    ```
 
 ## Setting Up the Microservice (Flask)
-   1.Start flask:
-    ```bash
+
+1. Start the Flask microservice:
+   ```bash
    python rate_limiter_service.py
-   ``
+   ```
 
 ## Setting Up the Frontend (ReactJS)
 
@@ -78,8 +79,7 @@ Ensure you have the following installed:
 ## Accessing the Application
 
 - The **backend API** will be available at: `http://localhost:8000/api/`
-- The **flask api** will be available at: `http://127.0.0.1:5000`
+- The **Flask API** will be available at: `http://127.0.0.1:5000`
 - The **frontend app** will be available at: `http://localhost:5173/`
 
 Now your web app is set up and running! 🚀
-
