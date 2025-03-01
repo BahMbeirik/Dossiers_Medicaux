@@ -44,10 +44,10 @@ Ensure you have the following installed:
    ```
 
 ## Setting Up the Microservice (Flask)
-   1.Start flask
+   1.Start flask:
     ```bash
    python rate_limiter_service.py
-   ```
+   ``
 
 ## Setting Up the Frontend (ReactJS)
 
