@@ -11,7 +11,7 @@ const HospitalStats = () => {
     const token = localStorage.getItem("access_token"); 
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      axios.get("http://localhost:5000/api/hospitals/stats/")
+      axios.get("http://localhost:8000/api/hospitals/stats/")
         .then(response => setHospitals(response.data))
         .catch(error => console.error("Error fetching hospitals:", error));
     } else {

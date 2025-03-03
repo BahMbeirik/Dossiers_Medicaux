@@ -11,7 +11,7 @@ const CategoryStats = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/categories/stats/")
+    axios.get("http://localhost:8000/api/categories/stats/")
       .then(response => setCategories(response.data))
       .catch(error => console.error("Error fetching categories:", error));
   }, []);

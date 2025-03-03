@@ -8,6 +8,7 @@ class BlockchainService:
         # Load Web3 connection
         self.web3 = Web3(Web3.HTTPProvider(settings.RPC_URL))
 
+
         # Load Contract ABI & Address
         contract_abi_path = os.path.join(os.path.dirname(__file__), "contract_abi", "DocumentRegistry.json")
         
