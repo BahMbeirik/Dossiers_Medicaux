@@ -1,16 +1,8 @@
 from authentication.models import CustomUser
 from .models import Category, Hospital, Document,Field
-from rest_framework import serializers
-import json
-from collections import OrderedDict
-from authentication.models import CustomUser
-
-# serializers.py
-
 import json
 from collections import OrderedDict
 from rest_framework import serializers
-from .models import Field
 
 class FieldSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(read_only=True)

@@ -83,7 +83,6 @@ const PatientDetails = () => {
         <h1 className="text-center text-3xl font-bold text-gray-800 dark:text-gray-200">
           {patient.prenom} {patient.nom}
         </h1>
-        <p className="text-center text-gray-500 dark:text-gray-400 mt-1">ID: {id}</p>
       </div>
       
       {/* Patient details with subtle colored icons */}

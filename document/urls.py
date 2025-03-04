@@ -1,4 +1,4 @@
-from .views import CategoryStatsView, CategoryViewSet, DocumentHistoryAPIView, HospitalStatsView,HospitalViewSet,FieldViewSet,DocumentAPIView,VerifyDocumentIntegrityAPIView,DocumentLastAPIView
+from .views import AdminDashboardAPIView, CategoryStatsView, CategoryViewSet, DoctorsByHospitalAPIView, DocumentHistoryAPIView, HospitalStatsView,HospitalViewSet,FieldViewSet,DocumentAPIView,VerifyDocumentIntegrityAPIView,DocumentLastAPIView
 from rest_framework.routers import DefaultRouter
 from django.urls import path
 from rest_framework_nested import routers
@@ -31,4 +31,8 @@ urlpatterns += [
 
     path('hospitals/stats/', HospitalStatsView.as_view(), name='hospital_stats'),
     path('categories/stats/', CategoryStatsView.as_view(), name='category_stats'),
+
+    path('hospital/<int:hospital_id>/doctors/', DoctorsByHospitalAPIView.as_view(), name='doctors_by_hospital'),
+
+    path('admin-dashboard/', AdminDashboardAPIView.as_view(), name='admin-dashboard'),
 ]

@@ -6,6 +6,9 @@ from rest_framework.permissions import AllowAny
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate
 
+from document.models import Hospital
+from document.serializers import DoctorSerializer
+
 from .models import Patient
 from .serializers import PatientSerializer
 from rest_framework import viewsets, permissions
@@ -25,7 +28,8 @@ from .serializers import CreateDoctorSerializer
 import time
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 # api limiter
 
 class UserRegistrationView(APIView):
@@ -72,13 +76,107 @@ class LoginView(APIView):
             if user:
                 FAILED_LOGIN_ATTEMPTS.pop(email, None)
                 otp = user.generate_otp()
-                send_mail(
-                    'Your OTP Code',
-                    f'Your OTP is: {otp}',
-                    'bahahembeirik@gmail.com',
+                # send_mail(
+                #     'Your OTP Code',
+                #     f'Your OTP is: {otp}',
+                #     'bahahembeirik@gmail.com',
+                #     [email],
+                #     fail_silently=False,
+                # )
+                    # Define the email subject with branding
+                subject = 'Your OTP Code - MediPlus'
+
+                # Create the HTML content with inline CSS for the blue header and MediPlus branding
+                html_content = f"""
+                    <html>
+                    <head>
+                    <style>
+                        body {{
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f9f9f9;
+                        }}
+                        .container {{
+                        width: 100%;
+                        max-width: 600px;
+                        margin: 40px auto;
+                        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                        background-color: #ffffff;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                        border-radius: 8px;
+                        overflow: hidden;
+                        }}
+                        .header {{
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        padding: 20px;
+                        text-align: center;
+                        }}
+                        .header h1 {{
+                        margin: 0;
+                        font-size: 28px;
+                        letter-spacing: 1px;
+                        }}
+                        .content {{
+                        padding: 20px;
+                        line-height: 1.6;
+                        color: #333333;
+                        }}
+                        .content p {{
+                        margin: 0 0 16px;
+                        }}
+                        .otp-code {{
+                        text-align: center;
+                        font-size: 24px;
+                        font-weight: bold;
+                        letter-spacing: 2px;
+                        color: #007BFF;
+                        margin: 20px 0;
+                        }}
+                        .footer {{
+                        background-color: #f1f1f1;
+                        padding: 10px;
+                        font-size: 12px;
+                        text-align: center;
+                        color: #777777;
+                        }}
+                    </style>
+                    </head>
+                    <body>
+                    <div class="container">
+                        <div class="header">
+                        <h1>MediPlus</h1>
+                        </div>
+                        <div class="content">
+                        <p>Bonjour,</p>
+                        <p>Nous sommes ravis de vous accompagner dans votre démarche de connexion sécurisée. Veuillez utiliser le mot de passe à usage unique (OTP) ci-dessous pour finaliser votre connexion :</p>
+                        <p class="otp-code">{otp}</p>
+                        <p>Si vous n’êtes pas à l’origine de cette demande, veuillez ignorer ce message.</p>
+                        <p>Merci d’avoir choisi MediPlus.</p>
+                        </div>
+                        <div class="footer">
+                        <p>&copy; 2025 MediPlus. Tous droits réservés.</p>
+                        </div>
+                    </div>
+                    </body>
+                    </html>
+                    """
+
+
+                # Generate a plain text version by stripping the HTML tags
+                text_content = strip_tags(html_content)
+
+                # Create the multi-part email message
+                msg = EmailMultiAlternatives(
+                    subject,
+                    text_content,
+                    'bahahembeirik@gmail.com',  # Sender's email address
                     [email],
-                    fail_silently=False,
                 )
+
+                # Attach the HTML alternative content
+                msg.attach_alternative(html_content, "text/html")
+                msg.send(fail_silently=False)
                 return Response({'message': 'OTP sent to your email', 'email': email}, status=status.HTTP_200_OK)
             
             attempts = FAILED_LOGIN_ATTEMPTS.get(email, {'count': 0, 'locked_until': 0})
@@ -166,15 +264,118 @@ class CreateDoctorView(APIView):
 
             # Get the first allowed frontend URL from CORS settings
             FRONTEND_URL = settings.CORS_ALLOWED_ORIGINS[0]
-            registration_link = f"{FRONTEND_URL}/register?email={email}"            
+            registration_link = f"{FRONTEND_URL}/register?email={email}"    
+            subject = 'Your OTP Code - MediPlus'        
             # Send email with registration link
-            send_mail(
-                'Complete Your Registration',
-                f'Please complete your registration by visiting: {registration_link}. Use this OTP to verify: {otp}',
-                'bahahembeirik@gmail.com',
+            html_content = f"""
+            <html>
+            <head>
+            <style>
+                body {{
+                margin: 0;
+                padding: 0;
+                background-color: #f9f9f9;
+                }}
+                .container {{
+                width: 100%;
+                max-width: 600px;
+                margin: 40px auto;
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                background-color: #ffffff;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
+                }}
+                .header {{
+                background-color: #007BFF;
+                color: #ffffff;
+                padding: 20px;
+                text-align: center;
+                }}
+                .header h1 {{
+                margin: 0;
+                font-size: 28px;
+                letter-spacing: 1px;
+                }}
+                .content {{
+                padding: 20px;
+                line-height: 1.6;
+                color: #333333;
+                }}
+                .content p {{
+                margin: 0 0 16px;
+                }}
+                .otp-code {{
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+                letter-spacing: 2px;
+                color: #007BFF;
+                margin: 20px 0;
+                }}
+                .footer {{
+                background-color: #f1f1f1;
+                padding: 10px;
+                font-size: 12px;
+                text-align: center;
+                color: #777777;
+                }}
+                .link {{
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                margin: 20px 0;
+                }}
+                .link a {{
+                color: #007BFF;
+                text-decoration: none;
+                }}
+            </style>
+            </head>
+            <body>
+            <div class="container">
+                <div class="header">
+                <h1>MediPlus</h1>
+                </div>
+                <div class="content">
+                <p>Bonjour,</p>
+                <p>Merci d'avoir choisi MediPlus. Pour finaliser votre inscription, veuillez cliquer sur le lien ci-dessous et entrer le code OTP affiché pour vérifier votre compte :</p>
+                <p class="link"><a href="{registration_link}">Compléter l'inscription</a></p>
+                <p>Votre code OTP est :</p>
+                <p class="otp-code">{otp}</p>
+                <p>Si vous n’êtes pas à l’origine de cette demande, veuillez ignorer ce message.</p>
+                <p>Nous vous souhaitons la bienvenue chez MediPlus.</p>
+                </div>
+                <div class="footer">
+                <p>&copy; 2025 MediPlus. Tous droits réservés.</p>
+                </div>
+            </div>
+            </body>
+            </html>
+            """
+
+            # send_mail(
+            #     'Complete Your Registration',
+            #     f'Please complete your registration by visiting: {registration_link}. Use this OTP to verify: {otp}',
+            #     'bahahembeirik@gmail.com',
+            #     [email],
+            #     fail_silently=False,
+            # )
+
+            # Generate a plain text version by stripping the HTML tags
+            text_content = strip_tags(html_content)
+
+            # Create the multi-part email message
+            msg = EmailMultiAlternatives(
+                subject,
+                text_content,
+                'bahahembeirik@gmail.com',  # Sender's email address
                 [email],
-                fail_silently=False,
             )
+
+            # Attach the HTML alternative content
+            msg.attach_alternative(html_content, "text/html")
+            msg.send(fail_silently=False)
             
             return Response({
                 'message': 'Doctor created successfully. Registration link sent to email.',
@@ -182,6 +383,46 @@ class CreateDoctorView(APIView):
             }, status=status.HTTP_201_CREATED)  
               
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, doctor_id):
+        """
+        Update a doctor's hospital. Only Admin users can update, and only the 'hospital' field is updated.
+        """
+        if request.user.role != 'Admin':
+            return Response({'error': 'Only Admin can update doctors'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            doctor = CustomUser.objects.get(id=doctor_id, role='Doctor')
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'Doctor not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        hospital_id = request.data.get('hospital')
+        if not hospital_id:
+            return Response({'error': 'Hospital field is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            hospital_obj = Hospital.objects.get(id=hospital_id)
+        except Hospital.DoesNotExist:
+            return Response({'error': 'Hospital not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        doctor.hospital = hospital_obj
+        doctor.save()
+        return Response({'message': 'Doctor updated successfully.'}, status=status.HTTP_200_OK)
+    
+    def delete(self, request, doctor_id):
+        """
+        Delete a doctor. Only Admin users can delete a doctor.
+        """
+        if request.user.role != 'Admin':
+            return Response({'error': 'Only Admin can delete doctors'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            doctor = CustomUser.objects.get(id=doctor_id, role='Doctor')
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'Doctor not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        doctor.delete()
+        return Response({'message': 'Doctor deleted successfully.'}, status=status.HTTP_200_OK)
 
 
 class PatientViewSet(viewsets.ModelViewSet):
@@ -193,3 +434,25 @@ class PatientViewSet(viewsets.ModelViewSet):
     search_fields = ['numero_identite','nom', 'prenom'] 
 
 
+class DoctorListAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Optional query parameter to filter by hospital
+        hospital_id = request.query_params.get("hospital")
+        
+        if hospital_id:
+            try:
+                # Filter doctors by the provided hospital id and role "Doctor"
+                doctors = CustomUser.objects.filter(hospital_id=hospital_id, role="Doctor")
+            except Exception as e:
+                return Response(
+                    {"error": "Error fetching doctors for the specified hospital."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            # If no hospital_id is provided, fetch all doctors
+            doctors = CustomUser.objects.filter(role="Doctor")
+            
+        serializer = DoctorSerializer(doctors, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

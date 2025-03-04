@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 
 
 class Category(models.Model):
-    id = models.BigAutoField(primary_key=True)      
+    id = models.BigAutoField(primary_key=True)    
     name = models.CharField(max_length=50)
 
     class Meta:

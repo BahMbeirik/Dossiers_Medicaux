@@ -17,7 +17,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import DocumentDetail from "./components/document/DocumentDetails";
 import AdminDashboard from "./components/admin/AdminDashboard";
-import CreateDoctor from "./components/admin/CreateDoctor";
+import DoctorManagement from "./components/admin/ManageDoctor";
 import Hospital from "./components/admin/Hospital";
 import Category from "./components/admin/Category";
 import Field from "./components/admin/Field";
@@ -123,7 +123,7 @@ const AppRoutes = () => {
               path="/add-doctor"
               element={
                 <ProtectedRoute>
-                  <CreateDoctor />
+                  <DoctorManagement />
                 </ProtectedRoute>
               }
             />

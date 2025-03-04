@@ -24,14 +24,12 @@ from rest_framework.permissions import AllowAny
 from collections import Counter
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    throttle_scope = 'custom_user'
     permission_classes = [permissions.IsAuthenticated]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
 class FieldViewSet(viewsets.ModelViewSet):
-    throttle_scope = 'custom_user'
     serializer_class = FieldSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -55,7 +53,6 @@ class FieldViewSet(viewsets.ModelViewSet):
             raise NotFound(detail="Cannot add field: The specified category does not exist.")
 
 class HospitalViewSet(viewsets.ModelViewSet):
-    throttle_scope = 'custom_user'
     permission_classes = [permissions.IsAuthenticated]
     queryset = Hospital.objects.all()
     serializer_class = HospitalSerializer
@@ -70,7 +67,6 @@ class HospitalViewSet(viewsets.ModelViewSet):
 logger = logging.getLogger(__name__)
 
 class DocumentAPIView(APIView):
-    throttle_scope = 'custom_user'
     permission_classes = [permissions.IsAuthenticated]
     blockchain_service = BlockchainService()  # Initialize blockchain connection
 
@@ -585,3 +581,71 @@ class CategoryStatsView(APIView):
         ]
 
         return Response(data)
+    
+
+
+logger = logging.getLogger(__name__)
+
+class AdminDashboardAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        
+        # Aggregate overall statistics
+        total_categories = Category.objects.count()
+        total_hospitals = Hospital.objects.count()
+        total_documents = Document.objects.count()
+        total_doctors = CustomUser.objects.filter(role="Doctor").count()
+
+        # Build hospital statistics: count doctors per hospital
+        hospital_stats = []
+        hospitals = Hospital.objects.all()
+        for hospital in hospitals:
+            num_doctors = CustomUser.objects.filter(hospital=hospital, role="Doctor").count()
+            hospital_stats.append({
+                "id": hospital.id,
+                "name": hospital.name,
+                "num_doctors": num_doctors
+            })
+
+        # Build category statistics: count documents per category
+        document_category_ids = Document.objects.values_list("category_id", flat=True)
+        category_counts = Counter(document_category_ids)
+        category_stats = [
+            {
+                "id": category.id,
+                "name": category.name,
+                "num_documents": category_counts.get(category.id, 0)
+            }
+            for category in Category.objects.all()
+        ]
+
+        # Get the 5 most recent documents and serialize them
+        recent_documents = Document.objects.order_by("-created_at")[:5]
+        serialized_documents = DocumentSerializer(recent_documents, many=True).data
+
+        data = {
+            "total_categories": total_categories,
+            "total_hospitals": total_hospitals,
+            "total_documents": total_documents,
+            "total_doctors": total_doctors,
+            "hospital_stats": hospital_stats,
+            "category_stats": category_stats,
+            "recent_documents": serialized_documents,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+    
+
+class DoctorsByHospitalAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, hospital_id):
+        try:
+            hospital = Hospital.objects.get(id=hospital_id)
+        except Hospital.DoesNotExist:
+            return Response({"error": "Hôpital non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+
+        doctors = CustomUser.objects.filter(hospital=hospital, role="Doctor")
+        serializer = DoctorSerializer(doctors, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
