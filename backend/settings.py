@@ -93,6 +93,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '30/min',
+        'get_scope': '20/min',
+        'post_scope': '10/min',
+    }
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'PAGE_SIZE': 1, 
     # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', 'rest_framework.filters.SearchFilter'],
@@ -184,6 +193,9 @@ DATABASES = {
             'host': 'localhost',
             'port': 27017,
         },
+        # 'CLIENT': {
+        #     'host': 'mongodb+srv://mbabah3450:cwceYKBwsgCJyVgj@cluster0.qus3k.mongodb.net/DBDossiersMedicaux?retryWrites=true&w=majority',
+        # },
         'USER': '',
         'PASSWORD': '',
         'AUTH_SOURCE': 'admin',

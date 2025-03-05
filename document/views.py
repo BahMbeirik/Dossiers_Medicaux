@@ -22,6 +22,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from rest_framework.permissions import AllowAny
 from collections import Counter
+from rest_framework.throttling import UserRateThrottle,AnonRateThrottle
+from rest_framework.throttling import ScopedRateThrottle
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
@@ -30,6 +32,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class FieldViewSet(viewsets.ModelViewSet):
+    throttle_classes = [ScopedRateThrottle]
+
     serializer_class = FieldSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -40,6 +44,7 @@ class FieldViewSet(viewsets.ModelViewSet):
         return Field.objects.filter(category_id=category_pk)
 
     def perform_create(self, serializer):
+        self.throttle_scope = 'post_scope'
         category_pk = self.kwargs.get('category_pk')
         try:
             category = Category.objects.get(pk=category_pk)
@@ -67,6 +72,8 @@ class HospitalViewSet(viewsets.ModelViewSet):
 logger = logging.getLogger(__name__)
 
 class DocumentAPIView(APIView):
+    throttle_classes = [ScopedRateThrottle]
+
     permission_classes = [permissions.IsAuthenticated]
     blockchain_service = BlockchainService()  # Initialize blockchain connection
 
@@ -149,6 +156,7 @@ class DocumentAPIView(APIView):
     #         )
 
     def post(self, request):
+        self.throttle_scope = 'post_scope'
         logger.debug(f"🔵 Incoming request data: {request.data}")  # Debugging step
 
         patient_id = request.data.get("patient_id")
@@ -377,79 +385,9 @@ class DocumentHistoryAPIView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-# OLD VERSION
-# class DocumentHistoryAPIView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def get(self, request):
-#         patient_id = request.query_params.get("patient_id")
-#         category_id = request.query_params.get("category_id")
-
-#         if not patient_id or not category_id:
-#             return Response(
-#                 {"error": "Both 'patient_id' and 'category_id' are required."},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         try:
-#             patient_id = int(patient_id)
-#             category_id = int(category_id)
-#         except ValueError:
-#             return Response(
-#                 {"error": "'patient_id' and 'category_id' must be integers."},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         try:
-#             # Fetch all documents for the patient and category
-#             documents = Document.objects.filter(
-#                 patient=patient_id,
-#                 category=category_id
-#             ).order_by('-created_at')
-
-#             if not documents.exists():
-#                 return Response(
-#                     {"error": "No document found for the given patient and category."},
-#                     status=status.HTTP_404_NOT_FOUND
-#                 )
-
-#             # Remove doctor restriction: Allow all doctors to see the data
-#             if request.user.role != "Doctor" and request.user.role != "Admin":
-#                 return Response(
-#                     {"error": "Only doctors and admins can access patient documents."},
-#                     status=status.HTTP_403_FORBIDDEN
-#                 )
-
-#             # Decrypt all documents
-#             document_list = []
-#             for doc in documents:
-#                 try:
-#                     decrypted_result = doc.get_plaintext_result()
-#                 except Exception as decrypt_error:
-#                     decrypted_result = f"Failed to decrypt: {str(decrypt_error)}"
-
-#                 document_list.append({
-#                     "id": doc.id,
-#                     "patient_id": doc.patient.id,
-#                     "category_id": doc.category.id,
-#                     "doctor_id": doc.doctor.id if doc.doctor else None,
-#                     "decrypted_result": decrypted_result,
-#                     "hash": doc.hash,
-#                     "created_at": doc.created_at
-#                 })
-
-#             return Response(document_list, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             return Response(
-#                 {"error": f"An unexpected error occurred: {str(e)}"},
-#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#             )
-
 
 # WE DON'T USE THIS RIGHT NOW
 class DocumentLastAPIView(APIView):
-    throttle_scope = 'custom_user'
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):

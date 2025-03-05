@@ -1,11 +1,92 @@
-/* src/components/patient/AddPatient.jsx */
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addPatient } from "../../services/patientService";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { FaUserPlus } from 'react-icons/fa';
+import { FaUserPlus, FaSave, FaMale, FaFemale } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+
+const SexRadio = ({ formik }) => {
+  const sexOptions = [
+    { 
+      value: 'M', 
+      label: 'Masculin', 
+      icon: FaMale, 
+      selectedBg: 'bg-blue-100 dark:bg-blue-900', 
+      selectedBorder: 'border-blue-500',
+      selectedIconColor: 'text-blue-600',
+      selectedTextColor: 'text-blue-700 dark:text-blue-300',
+      hoverBg: 'hover:bg-blue-50 dark:hover:bg-blue-800'
+    },
+    { 
+      value: 'F', 
+      label: 'Féminin', 
+      icon: FaFemale, 
+      selectedBg: 'bg-pink-100 dark:bg-pink-900', 
+      selectedBorder: 'border-pink-500',
+      selectedIconColor: 'text-pink-600',
+      selectedTextColor: 'text-pink-700 dark:text-pink-300',
+      hoverBg: 'hover:bg-pink-50 dark:hover:bg-pink-800'
+    }
+  ];
+
+  return (
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Sexe
+      </label>
+      <div className="flex space-x-4 justify-center">
+        {sexOptions.map((option) => (
+          <label 
+            key={option.value} 
+            className={`
+              relative flex flex-col items-center cursor-pointer 
+              p-4 rounded-lg transition-all duration-300 
+              ${formik.values.sex === option.value 
+                ? `${option.selectedBg} ${option.selectedBorder} border-2` 
+                : 'bg-gray-100 dark:bg-gray-700 border-2 border-transparent'}
+              ${option.hoverBg}
+            `}
+          >
+            <input
+              type="radio"
+              name="sex"
+              value={option.value}
+              checked={formik.values.sex === option.value}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="hidden"
+            />
+            <option.icon 
+              className={`
+                w-10 h-10 mb-2 
+                ${formik.values.sex === option.value 
+                  ? option.selectedIconColor
+                  : 'text-gray-400'}
+              `} 
+            />
+            <span className={`
+              text-sm font-semibold 
+              ${formik.values.sex === option.value 
+                ? option.selectedTextColor
+                : 'text-gray-600 dark:text-gray-300'}
+            `}>
+              {option.label}
+            </span>
+            {formik.values.sex === option.value && (
+              <span className="absolute top-1 right-1 text-green-500">
+                ✓
+              </span>
+            )}
+          </label>
+        ))}
+      </div>
+      {formik.touched.sex && formik.errors.sex && (
+        <p className="text-red-500 text-xs mt-1 text-center">{formik.errors.sex}</p>
+      )}
+    </div>
+  );
+};
 
 const AddPatient = () => {
   const navigate = useNavigate();
@@ -38,197 +119,102 @@ const AddPatient = () => {
     onSubmit: async (values) => {
       try {
         await addPatient(values);
-        toast.success('Patient ajouté avec succès !');
+        toast.success('Patient ajouté avec succès !', {
+          style: {
+            background: '#10B981',
+            color: 'white',
+          },
+          iconTheme: {
+            primary: 'white',
+            secondary: '#10B981',
+          },
+        });
         navigate('/home');
       } catch (error) {
         console.error('Error:', error.message);
-        toast.error("Une erreur s'est produite lors de l'ajout du patient. Veuillez réessayer.");
+        toast.error("Une erreur s'est produite lors de l'ajout du patient. Veuillez réessayer.", {
+          style: {
+            background: '#EF4444',
+            color: 'white',
+          },
+        });
       }
     },
   });
 
   return (
-    <div className="mt-5 p-4">
-      <h1 className="text-center text-3xl font-semibold text-gray-500 dark:text-white mb-5 flex items-center justify-center">
-        <FaUserPlus className="mr-2" />
-        Ajouter un Patient
-      </h1>
-      <form onSubmit={formik.handleSubmit} className="max-w-md mx-auto">
-        {/* Numéro d'identité */}
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="numero_identite"
-            id="numero_identite"
-            value={formik.values.numero_identite}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            required
-            className={`block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 appearance-none dark:text-white ${
-              formik.touched.numero_identite && formik.errors.numero_identite ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-            } focus:outline-none focus:ring-0 focus:border-blue-600 peer`}
-            placeholder=" "
-          />
-          <label
-            htmlFor="numero_identite"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 left-0 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500"
-          >
-            Numéro d'identité
-          </label>
-          {formik.touched.numero_identite && formik.errors.numero_identite && (
-            <p className="text-red-500 text-sm">{formik.errors.numero_identite}</p>
-          )}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8 bg-white dark:bg-gray-800 shadow-md rounded-xl p-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center justify-center">
+            <FaUserPlus className="mr-3 text-blue-600 dark:text-indigo-400" />
+            Ajouter un Patient
+          </h1>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            Veuillez remplir tous les champs du formulaire
+          </p>
         </div>
+        <form onSubmit={formik.handleSubmit} className="space-y-6">
+          {/* Previous input fields */}
+          {['numero_identite', 'nom', 'prenom', 'date_naissance', 'numero_telephone'].map((field) => (
+            <div key={field} className="relative">
+              <input
+                type={field === 'date_naissance' ? 'date' : 'text'}
+                name={field}
+                id={field}
+                value={formik.values[field]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                required
+                className={`w-full px-3 py-2 border-b-2 transition-colors duration-300 
+                  ${formik.touched[field] && formik.errors[field] 
+                    ? 'border-red-500 focus:border-red-700' 
+                    : 'border-gray-300 dark:border-gray-600 focus:border-indigo-600'} 
+                  bg-transparent text-gray-900 dark:text-white text-sm 
+                  focus:outline-none peer`}
+                placeholder=" "
+              />
+              <label 
+                htmlFor={field}
+                className={`absolute left-0 -top-3.5 text-sm transition-all duration-300 
+                  ${formik.values[field] 
+                    ? 'text-blue-600 dark:text-indigo-400 scale-75' 
+                    : 'text-gray-500 dark:text-gray-400 peer-focus:text-blue-600'}`}
+              >
+                {field === 'numero_identite' ? "Numéro d'identité" 
+                  : field === 'numero_telephone' ? "Numéro de téléphone"
+                  : field === 'date_naissance' ? "Date de naissance"
+                  : field.charAt(0).toUpperCase() + field.slice(1)}
+              </label>
+              {formik.touched[field] && formik.errors[field] && (
+                <p className="text-red-500 text-xs mt-1">{formik.errors[field]}</p>
+              )}
+            </div>
+          ))}
 
-        {/* Nom */}
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="nom"
-            id="nom"
-            value={formik.values.nom}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            required
-            className={`block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 appearance-none dark:text-white ${
-              formik.touched.nom && formik.errors.nom ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-            } focus:outline-none focus:ring-0 focus:border-blue-600 peer`}
-            placeholder=" "
-          />
-          <label
-            htmlFor="nom"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 left-0 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500"
-          >
-            Nom
-          </label>
-          {formik.touched.nom && formik.errors.nom && (
-            <p className="text-red-500 text-sm">{formik.errors.nom}</p>
-          )}
-        </div>
+          {/* Creative Sex Radio Component */}
+          <SexRadio formik={formik} />
 
-        {/* Prénom */}
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="prenom"
-            id="prenom"
-            value={formik.values.prenom}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            required
-            className={`block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 appearance-none dark:text-white ${
-              formik.touched.prenom && formik.errors.prenom ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-            } focus:outline-none focus:ring-0 focus:border-blue-600 peer`}
-            placeholder=" "
-          />
-          <label
-            htmlFor="prenom"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 left-0 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500"
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={formik.isSubmitting}
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+              ${formik.isSubmitting 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'}`}
           >
-            Prénom
-          </label>
-          {formik.touched.prenom && formik.errors.prenom && (
-            <p className="text-red-500 text-sm">{formik.errors.prenom}</p>
-          )}
-        </div>
-
-        {/* Date de naissance */}
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="date"
-            name="date_naissance"
-            id="date_naissance"
-            value={formik.values.date_naissance}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            required
-            max={new Date().toISOString().split('T')[0]} // Prevent selecting future dates
-            className={`block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 appearance-none dark:text-white ${
-              formik.touched.date_naissance && formik.errors.date_naissance ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-            } focus:outline-none focus:ring-0 focus:border-blue-600 peer`}
-            placeholder=" "
-          />
-          <label
-            htmlFor="date_naissance"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 left-0 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500"
-          >
-            Date de naissance
-          </label>
-          {formik.touched.date_naissance && formik.errors.date_naissance && (
-            <p className="text-red-500 text-sm">{formik.errors.date_naissance}</p>
-          )}
-        </div>
-
-        {/* Sexe */}
-        <div className="relative z-0 w-full mb-5 group">
-          <select
-            name="sex"
-            id="sex"
-            value={formik.values.sex}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            required
-            className={`block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 appearance-none dark:text-white ${
-              formik.touched.sex && formik.errors.sex ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-            } focus:outline-none focus:ring-0 focus:border-blue-600 peer`}
-          >
-            <option value="" disabled>-- Sexe --</option>
-            <option value="M">Masculin</option>
-            <option value="F">Féminin</option>
-          </select>
-          <label
-            htmlFor="sex"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 left-0 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500"
-          >
-            Sexe
-          </label>
-          {formik.touched.sex && formik.errors.sex && (
-            <p className="text-red-500 text-sm">{formik.errors.sex}</p>
-          )}
-        </div>
-
-        {/* Numéro de téléphone */}
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="numero_telephone"
-            id="numero_telephone"
-            value={formik.values.numero_telephone}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            required
-            className={`block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 appearance-none dark:text-white ${
-              formik.touched.numero_telephone && formik.errors.numero_telephone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-            } focus:outline-none focus:ring-0 focus:border-blue-600 peer`}
-            placeholder=" "
-          />
-          <label
-            htmlFor="numero_telephone"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 left-0 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500"
-          >
-            Numéro de téléphone
-          </label>
-          {formik.touched.numero_telephone && formik.errors.numero_telephone && (
-            <p className="text-red-500 text-sm">{formik.errors.numero_telephone}</p>
-          )}
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className={`w-full h-10 px-6 text-white transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800 flex items-center justify-center ${
-            formik.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={formik.isSubmitting}
-        >
-          {formik.isSubmitting ? 'Ajout en cours...' : (
-            <>
-              <FaUserPlus className="mr-2" />
-              Ajouter
-            </>
-          )}
-        </button>
-      </form>
+            {formik.isSubmitting ? (
+              <span>Ajout en cours...</span>
+            ) : (
+              <>
+                <FaSave className="mr-2 -ml-1" />
+                Ajouter le Patient
+              </>
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

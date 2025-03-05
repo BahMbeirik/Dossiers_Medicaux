@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* src/services/AuthService.js */
 import axios from 'axios';
 
 const API_URL = "http://localhost:8000/api/auth/";
@@ -62,7 +60,7 @@ const AuthService = {
   refreshToken: async () => {
     const refreshToken = AuthService.getRefreshToken();
     if (!refreshToken) return null;
-
+  
     try {
       const response = await axios.post(`${API_URL}token/refresh/`, { refresh: refreshToken });
       AuthService.setTokens(response.data);
@@ -72,6 +70,9 @@ const AuthService = {
       return null;
     }
   },
+  
 };
 
 export default AuthService;
+
+

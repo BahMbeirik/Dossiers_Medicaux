@@ -81,7 +81,7 @@ const PatientDetails = () => {
           <FaUserCircle className="text-blue-500 dark:text-blue-400 text-5xl" />
         </div>
         <h1 className="text-center text-3xl font-bold text-gray-800 dark:text-gray-200">
-          {patient.prenom} {patient.nom}
+          {patient.nom} {patient.prenom} 
         </h1>
       </div>
       

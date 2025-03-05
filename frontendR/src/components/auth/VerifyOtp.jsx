@@ -41,6 +41,8 @@ const VerifyOtp = () => {
     }
   };
 
+  
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">

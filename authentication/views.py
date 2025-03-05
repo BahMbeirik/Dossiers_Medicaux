@@ -30,10 +30,11 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
-# api limiter
+from rest_framework.throttling import UserRateThrottle,AnonRateThrottle
+from rest_framework.throttling import ScopedRateThrottle
 
 class UserRegistrationView(APIView):
-    throttle_scope = 'custom_user'
+    throttle_classes = [AnonRateThrottle]    
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -59,7 +60,7 @@ class UserRegistrationView(APIView):
 FAILED_LOGIN_ATTEMPTS = {}
 LOGIN_LOCKOUT_TIMES = [60, 180, 300]  # 1 min, 3 min, 5 min
 class LoginView(APIView):
-    throttle_scope = 'custom_user'
+    throttle_classes = [AnonRateThrottle]
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -192,6 +193,8 @@ class LoginView(APIView):
     
 
 class AllPatientsViewSet(viewsets.ViewSet):
+    throttle_classes = [UserRateThrottle]
+
     """
     Example: returns all patients without pagination
     """
@@ -199,8 +202,10 @@ class AllPatientsViewSet(viewsets.ViewSet):
         patients = Patient.objects.all()
         serializer = PatientSerializer(patients, many=True)
         return Response(serializer.data)
+
 class OTPVerificationView(APIView):
-    throttle_scope = 'custom_user'
+    throttle_classes = [AnonRateThrottle]
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -236,7 +241,8 @@ class OTPVerificationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CreateDoctorView(APIView):
-    throttle_scope = 'custom_user'
+    throttle_classes = [UserRateThrottle]
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -426,6 +432,8 @@ class CreateDoctorView(APIView):
 
 
 class PatientViewSet(viewsets.ModelViewSet):
+    throttle_classes = [UserRateThrottle]
+
     permission_classes = [permissions.IsAuthenticated]
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
@@ -435,6 +443,7 @@ class PatientViewSet(viewsets.ModelViewSet):
 
 
 class DoctorListAPIView(APIView):
+    throttle_classes = [UserRateThrottle]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
