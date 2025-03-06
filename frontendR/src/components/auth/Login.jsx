@@ -175,14 +175,14 @@ const Login = () => {
         </button>
 
         {/* Register Link */}
-        <div className="text-center mt-4">
+        {/* <div className="text-center mt-4">
           <p className="text-sm">
             Vous n'avez pas de compte ?{" "}
             <Link to="/register" className="text-blue-500 hover:underline">
               Inscrivez-vous ici
             </Link>
           </p>
-        </div>
+        </div> */}
       </form>
     </div>
   );

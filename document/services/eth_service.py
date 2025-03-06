@@ -18,8 +18,10 @@ class BlockchainService:
         with open(contract_abi_path) as f:
             contract_data = json.load(f)
 
-        self.contract_address = contract_data["contractAddress"]  # Get contract address from JSON
-        contract_abi = contract_data["abi"]  # Get ABI from JSON
+        # self.contract_address = contract_data["contractAddress"]  # Get contract address from JSON
+        # contract_abi = contract_data["abi"]  # Get ABI from JSON
+        self.contract_address = Web3.to_checksum_address(contract_data["contractAddress"])
+        contract_abi = contract_data["abi"]
 
         self.account = self.web3.eth.account.from_key(settings.PRIVATE_KEY)
         self.contract = self.web3.eth.contract(address=self.contract_address, abi=contract_abi)

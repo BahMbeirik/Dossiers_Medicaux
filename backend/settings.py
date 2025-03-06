@@ -99,6 +99,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_THROTTLE_RATES': {
         'user': '30/min',
+        'anon' : '10/min',
         'get_scope': '20/min',
         'post_scope': '10/min',
     }
@@ -148,8 +149,10 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
+    'https://lwww.winserver-2019.fst.rsc',
     'http://localhost:5173', 
     'http://localhost:5174', 
+    'http://localhost:5176', 
 ]
 
 ROOT_URLCONF = 'backend.urls'

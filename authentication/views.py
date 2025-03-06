@@ -242,7 +242,6 @@ class OTPVerificationView(APIView):
 
 class CreateDoctorView(APIView):
     throttle_classes = [UserRateThrottle]
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
