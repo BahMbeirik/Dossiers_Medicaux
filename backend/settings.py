@@ -149,6 +149,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:5174',
     'https://mediplus-rho.vercel.app',
+    'https://dossiers-medicaux-6dgm.onrender.com',
 ]
 
 ROOT_URLCONF = 'backend.urls'
