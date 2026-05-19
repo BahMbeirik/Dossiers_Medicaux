@@ -75,7 +75,7 @@ class DocumentAPIView(APIView):
     throttle_classes = [ScopedRateThrottle]
 
     permission_classes = [permissions.IsAuthenticated]
-    blockchain_service = BlockchainService()  # Initialize blockchain connection
+    # blockchain_service = BlockchainService()
 
     # def post(self, request):
     #     print("🔵 Incoming request data:", request.data)  # 🔥 Debugging step
@@ -200,34 +200,20 @@ class DocumentAPIView(APIView):
             document_hash = hashlib.sha256(encrypted_bytes).hexdigest()
             logger.debug(f"🔹 Computed Document Hash: {document_hash}")
 
-            try:
-                tx_hash = self.blockchain_service.store_document(document.id, document_hash)
-                logger.info(f"✅ Document hash stored on blockchain. Tx Hash: {tx_hash}")
+            # try:
+            #     tx_hash = self.blockchain_service.store_document(document.id, document_hash)
+            #     logger.info(f"✅ Document hash stored on blockchain. Tx Hash: {tx_hash}")
+            # except Exception as e:
+            #     logger.error(f"❌ Blockchain Error: {str(e)}")
 
-                return Response(
-                    {
-                        "message": "Document created successfully and hash stored on blockchain",
-                        "document_id": document.id,
-                        "hash": document_hash,
-                        "tx_hash": tx_hash
-                    },
-                    status=status.HTTP_201_CREATED
-                )
-
-            except ValueError as ve:
-                # Handle specific blockchain errors like insufficient funds
-                logger.error(f"❌ Blockchain Error: {str(ve)}")
-                return Response(
-                    {"error": f"Document saved locally but failed to store on blockchain: {str(ve)}"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-            except Exception as e:
-                # Handle other blockchain-related errors
-                logger.error(f"❌ Blockchain Error: {str(e)}")
-                return Response(
-                    {"error": f"Document saved locally but failed to store on blockchain: {str(e)}"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
+            return Response(
+                {
+                    "message": "Document created successfully",
+                    "document_id": document.id,
+                    "hash": document_hash,
+                },
+                status=status.HTTP_201_CREATED
+            )
 
         except (Patient.DoesNotExist, Category.DoesNotExist, CustomUser.DoesNotExist) as e:
             logger.error(f"❌ Related object does not exist: {str(e)}")
@@ -259,12 +245,13 @@ class DocumentAPIView(APIView):
             # Decrypt the result
             plaintext_result = document.get_plaintext_result()
 
-            # Verify integrity against blockchain
-            try:
-                is_valid = self.blockchain_service.verify_document(document.id, document.hash)
-            except Exception as e:
-                logger.error(f"Blockchain verification failed: {str(e)}")
-                is_valid = False
+            # Blockchain verification disabled
+            # try:
+            #     is_valid = self.blockchain_service.verify_document(document.id, document.hash)
+            # except Exception as e:
+            #     logger.error(f"Blockchain verification failed: {str(e)}")
+            #     is_valid = False
+            is_valid = None
 
 
             # Prepare the response data
@@ -333,8 +320,8 @@ class DocumentHistoryAPIView(APIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
 
-            # Initialize Blockchain Service
-            blockchain_service = BlockchainService()
+            # Blockchain verification disabled
+            # blockchain_service = BlockchainService()
 
             # Decrypt and verify all documents
             document_list = []
@@ -344,13 +331,7 @@ class DocumentHistoryAPIView(APIView):
                 except Exception as decrypt_error:
                     decrypted_result = f"Failed to decrypt: {str(decrypt_error)}"
 
-                # Verify document hash on blockchain
-                is_valid = False
-                try:
-                    is_valid = blockchain_service.verify_document(doc.id, doc.hash)
-
-                except Exception as e:
-                    is_valid = False  # Assume invalid if verification fails
+                # is_valid = blockchain_service.verify_document(doc.id, doc.hash)
 
                 document_list.append({
                     "id": doc.id,
@@ -359,7 +340,7 @@ class DocumentHistoryAPIView(APIView):
                     "doctor_id": doc.doctor.id if doc.doctor else None,
                     "decrypted_result": decrypted_result,
                     "hash": doc.hash,
-                    "is_valid": is_valid,  # Add verification result
+                    "is_valid": None,
                     "created_at": doc.created_at
                 })
 

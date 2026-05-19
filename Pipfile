@@ -18,6 +18,8 @@ flask-limiter = "*"
 requests = "*"
 djongo = "==1.3.6"
 flask-cors = "*"
+gunicorn = "*"
+whitenoise = "*"
 
 [dev-packages]
 

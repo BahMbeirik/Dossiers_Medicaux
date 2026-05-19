@@ -52,7 +52,7 @@ const Navbar = () => {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <span className="text-blue-600 dark:text-blue-400 font-bold text-xl">MediPlus</span>
+              <span className="text-blue-600 dark:text-blue-400 font-bold text-xl">DocPlus</span>
             </div>
           </div>
 

@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7=2hj#e3yho)#=32e-4dk+831e+f@pp20k)=8mxfl!!)460$p!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 CORS_ALLOW_HEADERS = [
     'content-type',
     'authorization',
@@ -63,15 +63,10 @@ if not CONTRACT_ADDRESS:
 if not PRIVATE_KEY:
     raise ValueError("Missing PRIVATE_KEY in .env file.")
 
-print(f"🔵 Loaded CONTRACT_ADDRESS: {CONTRACT_ADDRESS}")
-print(f"🔵 Loaded PRIVATE_KEY: {PRIVATE_KEY}")
-print(f"🔵 Loaded RPC_URL: {RPC_URL}")
-######## End Loading Blockchain Configurations #######
-
-
 INSTALLED_APPS = [
     'authentication',
     'document',
+    'whitenoise',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -122,9 +117,11 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -141,18 +138,17 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'bahahembeirik@gmail.com'
-EMAIL_HOST_PASSWORD = 'sjgm gyuq gnrl onlp'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'mbabah3450@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'afun ditb depn syfj')
 
 # Authentication Settings
 AUTH_USER_MODEL = 'authentication.CustomUser'
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    'https://lwww.winserver-2019.fst.rsc',
-    'http://localhost:5173', 
-    'http://localhost:5174', 
-    'http://localhost:5176', 
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://mediplus-rho.vercel.app',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -187,23 +183,36 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # }
 
 # MongoDB Database Configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'DBDossiersMedicaux', 
-        'ENFORCE_SCHEMA': False,
-        'CLIENT': {
-            'host': 'localhost',
-            'port': 27017,
-        },
-        # 'CLIENT': {
-        #     'host': 'mongodb+srv://mbabah3450:cwceYKBwsgCJyVgj@cluster0.qus3k.mongodb.net/DBDossiersMedicaux?retryWrites=true&w=majority',
-        # },
-        'USER': '',
-        'PASSWORD': '',
-        'AUTH_SOURCE': 'admin',
+MONGO_URL = os.getenv('MONGO_URL')
+
+if MONGO_URL:
+    # Production: MongoDB Atlas
+    DATABASES = {
+        'default': {
+            'ENGINE': 'djongo',
+            'NAME': 'DBDossiersMedicaux',
+            'ENFORCE_SCHEMA': False,
+            'CLIENT': {
+                'host': MONGO_URL,
+            },
+        }
     }
-}
+else:
+    # Local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'djongo',
+            'NAME': 'DBDossiersMedicaux',
+            'ENFORCE_SCHEMA': False,
+            'CLIENT': {
+                'host': 'localhost',
+                'port': 27017,
+            },
+            'USER': '',
+            'PASSWORD': '',
+            'AUTH_SOURCE': 'admin',
+        }
+    }
 
 
 # Password validation
@@ -241,6 +250,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

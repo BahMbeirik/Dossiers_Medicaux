@@ -177,7 +177,11 @@ class LoginView(APIView):
 
                 # Attach the HTML alternative content
                 msg.attach_alternative(html_content, "text/html")
-                msg.send(fail_silently=False)
+                try:
+                    msg.send(fail_silently=False)
+                except Exception as e:
+                    print(f"⚠️ Email sending failed: {e}")
+                    print(f"🔑 OTP for {email}: {otp}")
                 return Response({'message': 'OTP sent to your email', 'email': email}, status=status.HTTP_200_OK)
             
             attempts = FAILED_LOGIN_ATTEMPTS.get(email, {'count': 0, 'locked_until': 0})
