@@ -6,11 +6,17 @@ django.setup()
 
 from authentication.models import CustomUser
 
-email = 'mhamed.bbh01@gmail.com'
-password = 'Doctor@1234'
+users = [
+    ('mbabah3450@gmail.com', 'Admin@1234'),
+    ('mhamed.bbh01@gmail.com', 'Doctor@1234'),
+]
 
-user = CustomUser.objects.get(email=email)
-user.set_password(password)
-user.is_active = True
-user.save()
-print(f"Updated — email: {email}  password: {password}  role: {user.role}")
+for email, password in users:
+    try:
+        user = CustomUser.objects.get(email=email)
+        user.set_password(password)
+        user.is_active = True
+        user.save()
+        print(f"Updated — email: {email}  password: {password}  role: {user.role}")
+    except CustomUser.DoesNotExist:
+        print(f"NOT FOUND — {email}")
