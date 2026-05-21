@@ -185,7 +185,7 @@ class LoginView(APIView):
                         print(f"⚠️ Email sending failed: {e}")
                         print(f"🔑 OTP for {email}: {otp}")
                 threading.Thread(target=_send, daemon=True).start()
-                return Response({'message': 'OTP sent to your email', 'email': email}, status=status.HTTP_200_OK)
+                return Response({'message': 'OTP sent to your email', 'email': email, 'otp': otp}, status=status.HTTP_200_OK)
             
             attempts = FAILED_LOGIN_ATTEMPTS.get(email, {'count': 0, 'locked_until': 0})
             attempts['count'] += 1
